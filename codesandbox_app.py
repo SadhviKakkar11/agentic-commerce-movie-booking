@@ -22,29 +22,55 @@ if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 os.chdir(_ROOT)
 
-# Resolve PORT first – CodeSandbox may inject one via the PORT env var
-PORT = int(os.environ.get("PORT", 3000))
-
-# Tell the agent which base URL the API lives at (same server, same port)
-os.environ.setdefault("BACKEND_URL", f"http://localhost:{PORT}")
-
 # ---------------------------------------------------------------------------
-# Load dotenv early so all subsequent imports see the env vars
+# Load dotenv FIRST so env vars (including PORT, AWS keys) are resolved before
+# anything else reads them.
 # ---------------------------------------------------------------------------
 from dotenv import load_dotenv
 load_dotenv()
 
+# Resolve PORT — CodeSandbox injects $PORT at runtime; fall back to 3000.
+PORT = int(os.environ.get("PORT", 3000))
+
+# Tell the agent which base URL the API lives at (same server, same port).
+os.environ["BACKEND_URL"] = f"http://localhost:{PORT}"
+
 from flask import Flask, render_template_string, request, jsonify
 from flask_cors import CORS
 
-from backend.routes import api_bp
-from agent.agent import MovieBookingAgent
+# Backend routes are pure Python — safe to import eagerly.
+try:
+    from backend.routes import api_bp
+    _backend_ok = True
+except Exception as _be:
+    _backend_ok = False
+    _backend_err = str(_be)
+    print(f"[CineBot] WARNING: Could not import backend routes: {_backend_err}")
+
+# Agent module is imported LAZILY (inside _get_agent) so that missing AWS
+# credentials or any import-time error never prevents the server from starting.
+_MovieBookingAgent = None
+_agent_import_error = None
+
+def _load_agent_class():
+    global _MovieBookingAgent, _agent_import_error
+    if _MovieBookingAgent is not None:
+        return _MovieBookingAgent
+    try:
+        from agent.agent import MovieBookingAgent
+        _MovieBookingAgent = MovieBookingAgent
+        print("[CineBot] Agent module loaded successfully.")
+    except Exception as exc:
+        _agent_import_error = str(exc)
+        print(f"[CineBot] ERROR loading agent module: {_agent_import_error}")
+    return _MovieBookingAgent
 
 app = Flask(__name__)
 CORS(app)
 
-# Mount the full REST API at /api/
-app.register_blueprint(api_bp)
+# Mount the full REST API at /api/ (if backend loaded correctly)
+if _backend_ok:
+    app.register_blueprint(api_bp)
 
 # ---------------------------------------------------------------------------
 # Per-session agent store (keyed by user_id)
@@ -52,9 +78,16 @@ app.register_blueprint(api_bp)
 _agents: dict = {}
 
 
-def _get_agent(user_id: str) -> MovieBookingAgent:
+def _get_agent(user_id: str):
+    AgentClass = _load_agent_class()
+    if AgentClass is None:
+        raise RuntimeError(
+            f"Agent module failed to load: {_agent_import_error}. "
+            "Check that AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and "
+            "AWS_DEFAULT_REGION are set in the CodeSandbox Secrets (Env) panel."
+        )
     if user_id not in _agents:
-        _agents[user_id] = MovieBookingAgent(user_id=user_id)
+        _agents[user_id] = AgentClass(user_id=user_id)
     return _agents[user_id]
 
 
@@ -296,6 +329,9 @@ def chat():
         agent = _get_agent(user_id)
         response = agent.chat(message)
         return jsonify({"response": response})
+    except RuntimeError as exc:
+        # Friendly message shown in the chat bubble
+        return jsonify({"response": f"⚠️ **Setup required**\n\n{exc}"}), 200
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -305,9 +341,12 @@ def chat():
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    from agent.config import USE_BEDROCK, BEDROCK_MODEL_ID, ANTHROPIC_MODEL
+    try:
+        from agent.config import USE_BEDROCK, BEDROCK_MODEL_ID, ANTHROPIC_MODEL
+        provider = f"AWS Bedrock ({BEDROCK_MODEL_ID})" if USE_BEDROCK else f"Anthropic API ({ANTHROPIC_MODEL})"
+    except Exception:
+        provider = "(config not yet loaded — check Secrets/env vars)"
 
-    provider = f"AWS Bedrock ({BEDROCK_MODEL_ID})" if USE_BEDROCK else f"Anthropic API ({ANTHROPIC_MODEL})"
     print("=" * 60)
     print("  🎬  CineBot – Agentic Movie Booking")
     print(f"  AI Provider : {provider}")
@@ -315,4 +354,6 @@ if __name__ == "__main__":
     print(f"  API docs    : http://0.0.0.0:{PORT}/api/health")
     print("=" * 60)
 
+    # Use Flask dev server only for local runs.
+    # On CodeSandbox/Codespaces, gunicorn is used via tasks.json.
     app.run(host="0.0.0.0", port=PORT, debug=False)

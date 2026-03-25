@@ -52,7 +52,7 @@ Write-Host ""
 Write-Host "=== Creating repository '$RepoName' on GitHub ===" -ForegroundColor Cyan
 $repo = Invoke-GH -Method POST -Url "https://api.github.com/user/repos" -Body @{
     name        = $RepoName
-    description = "CineBot – Agentic movie-booking chatbot (Claude on AWS Bedrock, Hindi movies from March 2026)"
+    description = "CineBot - Agentic movie-booking chatbot (Claude on AWS Bedrock, Hindi movies from March 2026)"
     private     = $Private
     auto_init   = $false
 }
