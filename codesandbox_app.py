@@ -1,0 +1,318 @@
+"""
+CodeSandbox combined entry point.
+Runs the backend API and the chat web UI on a single Flask server (port 3000).
+
+Usage:
+    python codesandbox_app.py
+
+Environment variables (set in CodeSandbox Secrets or create a .env file):
+    USE_BEDROCK=True
+    AWS_REGION=us-east-1
+    BEDROCK_MODEL_ID=anthropic.claude-3-5-sonnet-20241022-v2:0
+    AWS_ACCESS_KEY_ID=<your-key>
+    AWS_SECRET_ACCESS_KEY=<your-secret>
+"""
+import os
+import sys
+
+# Ensure the project root is always on sys.path and is the working directory,
+# regardless of where Python is launched from (CodeSandbox, Codespaces, local).
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+os.chdir(_ROOT)
+
+# Resolve PORT first – CodeSandbox may inject one via the PORT env var
+PORT = int(os.environ.get("PORT", 3000))
+
+# Tell the agent which base URL the API lives at (same server, same port)
+os.environ.setdefault("BACKEND_URL", f"http://localhost:{PORT}")
+
+# ---------------------------------------------------------------------------
+# Load dotenv early so all subsequent imports see the env vars
+# ---------------------------------------------------------------------------
+from dotenv import load_dotenv
+load_dotenv()
+
+from flask import Flask, render_template_string, request, jsonify
+from flask_cors import CORS
+
+from backend.routes import api_bp
+from agent.agent import MovieBookingAgent
+
+app = Flask(__name__)
+CORS(app)
+
+# Mount the full REST API at /api/
+app.register_blueprint(api_bp)
+
+# ---------------------------------------------------------------------------
+# Per-session agent store (keyed by user_id)
+# ---------------------------------------------------------------------------
+_agents: dict = {}
+
+
+def _get_agent(user_id: str) -> MovieBookingAgent:
+    if user_id not in _agents:
+        _agents[user_id] = MovieBookingAgent(user_id=user_id)
+    return _agents[user_id]
+
+
+# ---------------------------------------------------------------------------
+# Chat web-UI routes
+# ---------------------------------------------------------------------------
+
+HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CineBot – Movie Ticket Booking</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root{
+  --red:#E50914;--red2:#B20710;
+  --bg:#111;--surface:#1e1e1e;--surface2:#2a2a2a;--surface3:#333;
+  --text:#e8e8e8;--muted:#888;--accent:#f5a623;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── Header ─────────────────────────────────────────── */
+.header{background:linear-gradient(90deg,var(--red),var(--red2));padding:12px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.6);flex-shrink:0}
+.logo{font-size:20px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.logo span{font-size:11px;font-weight:400;opacity:.8;margin-left:4px}
+.user-pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:13px}
+.pts{background:var(--accent);color:#111;border-radius:10px;padding:2px 9px;font-weight:700;font-size:12px}
+
+/* ── chat area ──────────────────────────────────────── */
+.chat-wrap{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:14px}
+.chat-wrap::-webkit-scrollbar{width:5px}
+.chat-wrap::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+
+.msg{display:flex;gap:10px;max-width:82%;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg.bot{align-self:flex-start}
+
+.avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.avatar.bot{background:linear-gradient(135deg,var(--red),var(--red2))}
+.avatar.user{background:linear-gradient(135deg,#667eea,#764ba2)}
+
+.bubble{padding:11px 15px;border-radius:16px;line-height:1.65;font-size:14px;word-wrap:break-word}
+.msg.bot .bubble{background:var(--surface);border:1px solid var(--surface3);border-top-left-radius:4px}
+.msg.user .bubble{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-top-right-radius:4px}
+
+/* markdown inside bubbles */
+.bubble h1,.bubble h2,.bubble h3{margin:8px 0 4px;line-height:1.3}
+.bubble h2{font-size:15px;color:var(--accent)}
+.bubble h3{font-size:14px}
+.bubble p{margin:4px 0}
+.bubble ul,.bubble ol{margin:4px 0 4px 20px}
+.bubble li{margin:3px 0}
+.bubble strong{color:var(--accent)}
+.bubble em{color:#ccc}
+.bubble code{background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px;font-size:12px;font-family:monospace}
+.bubble pre{background:rgba(0,0,0,.35);padding:10px;border-radius:8px;overflow-x:auto;margin:8px 0}
+.bubble hr{border:none;border-top:1px solid var(--surface3);margin:8px 0}
+.bubble blockquote{border-left:3px solid var(--accent);padding-left:10px;color:var(--muted);margin:6px 0}
+.bubble table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px}
+.bubble th,.bubble td{border:1px solid var(--surface3);padding:6px 10px;text-align:left}
+.bubble th{background:var(--surface2)}
+
+/* typing dots */
+.typing{display:flex;gap:5px;padding:12px 15px;background:var(--surface);border-radius:16px;border-top-left-radius:4px;width:fit-content}
+.dot{width:7px;height:7px;background:var(--muted);border-radius:50%;animation:bop 1.3s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bop{0%,80%,100%{transform:scale(.8);opacity:.4}40%{transform:scale(1.1);opacity:1}}
+
+/* ── Input bar ──────────────────────────────────────── */
+.input-bar{background:var(--surface);border-top:1px solid var(--surface3);padding:14px 20px;flex-shrink:0}
+.quick-btns{display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap}
+.qb{background:var(--surface2);border:1px solid var(--surface3);color:var(--text);border-radius:20px;padding:5px 13px;font-size:12px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.qb:hover{background:var(--red);border-color:var(--red)}
+.row{display:flex;gap:10px;align-items:center}
+.row input{flex:1;background:var(--surface2);border:1px solid var(--surface3);border-radius:25px;padding:11px 18px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
+.row input:focus{border-color:var(--red)}
+.row input::placeholder{color:var(--muted)}
+.send{background:var(--red);border:none;border-radius:50%;width:42px;height:42px;color:#fff;font-size:19px;cursor:pointer;transition:background .18s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.send:hover{background:var(--red2)}.send:disabled{background:#444;cursor:not-allowed}
+
+/* constraint tag */
+.tag{background:rgba(229,9,20,.15);border:1px solid rgba(229,9,20,.3);color:#f87171;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">🎬 CineBot <span><span class="tag">Hindi · From 12-Mar-2026</span></span></div>
+  <div class="user-pill">
+    <span>👤 Ram Kumar</span>
+    <span style="color:rgba(255,255,255,.4)">·</span>
+    <span>ICICI Bank</span>
+    <span class="pts">⭐ 1000 pts</span>
+  </div>
+</div>
+
+<!-- Chat -->
+<div class="chat-wrap" id="chatArea">
+  <div class="msg bot">
+    <div class="avatar bot">🤖</div>
+    <div class="bubble">
+      <strong>Hi Ram! 👋 I'm CineBot, your personal movie booking assistant.</strong><br><br>
+      I can see you have <strong>1000 ICICI Bank reward points</strong> — let's put them to good use!<br><br>
+      Just tell me what you'd like to watch and when. I'll check your preferences, recommend the best theatre &amp; seats, and handle everything from booking to payment. 🎬
+    </div>
+  </div>
+</div>
+
+<!-- Input -->
+<div class="input-bar">
+  <div class="quick-btns">
+    <button class="qb" onclick="hint('I want to book 2 tickets for Dhurandhar this Sunday afternoon')">🎥 Book Dhurandhar</button>
+    <button class="qb" onclick="hint('Show me all Hindi movies available this week')">🎬 What\'s Playing</button>
+    <button class="qb" onclick="hint('Show my past bookings')">📋 My Bookings</button>
+    <button class="qb" onclick="hint('What Hindi movies are releasing in action genre?')">⭐ Action Movies</button>
+  </div>
+  <div class="row">
+    <input type="text" id="inp"
+      placeholder="e.g. I want to book 2 tickets for Dhurandhar this Sunday afternoon…"
+      autocomplete="off"/>
+    <button class="send" id="sendBtn" onclick="send()">➤</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+marked.setOptions({breaks:true, gfm:true});
+
+const USER_ID = 'user_ram_001';
+const chat    = document.getElementById('chatArea');
+
+// hint: fill the input box but do NOT auto-send — user types and presses Send
+function hint(t){
+  const inp=document.getElementById('inp');
+  inp.value=t;
+  inp.focus();
+  // place cursor at end
+  inp.setSelectionRange(t.length, t.length);
+}
+// qs kept for backward compat but now same as hint
+function qs(t){hint(t);}
+
+function send(){
+  const inp=document.getElementById('inp');
+  const msg=inp.value.trim();
+  if(!msg)return;
+
+  const btn=document.getElementById('sendBtn');
+  btn.disabled=true;
+  addMsg(msg,'user',false);
+  inp.value='';
+
+  const tid=addTyping();
+
+  fetch('/chat',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user_id:USER_ID, message:msg})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    rmTyping(tid);
+    btn.disabled=false;
+    if(d.response) addMsg(d.response,'bot',true);
+    else addMsg('❌ Error: '+(d.error||'Unknown error'),'bot',false);
+  })
+  .catch(e=>{
+    rmTyping(tid);
+    btn.disabled=false;
+    addMsg('❌ Connection error: '+e.message,'bot',false);
+  });
+}
+
+function addMsg(text, who, md){
+  const wrap=document.createElement('div');
+  wrap.className='msg '+who;
+
+  const av=document.createElement('div');
+  av.className='avatar '+who;
+  av.textContent = who==='bot'?'🤖':'👤';
+
+  const b=document.createElement('div');
+  b.className='bubble';
+  b.innerHTML = md ? marked.parse(text) : esc(text);
+
+  wrap.appendChild(av);
+  wrap.appendChild(b);
+  chat.appendChild(wrap);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function addTyping(){
+  const wrap=document.createElement('div');
+  wrap.className='msg bot';
+  const id='t'+Date.now();
+  wrap.id=id;
+  const av=document.createElement('div');
+  av.className='avatar bot';
+  av.textContent='🤖';
+  const t=document.createElement('div');
+  t.className='typing';
+  t.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  wrap.appendChild(av);
+  wrap.appendChild(t);
+  chat.appendChild(wrap);
+  chat.scrollTop=chat.scrollHeight;
+  return id;
+}
+function rmTyping(id){const e=document.getElementById(id);if(e)e.remove();}
+function esc(t){const d=document.createElement('div');d.appendChild(document.createTextNode(t));return d.innerHTML;}
+
+document.getElementById('inp').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}
+});
+</script>
+</body>
+</html>"""
+
+
+@app.route("/")
+def index():
+    return render_template_string(HTML_TEMPLATE)
+
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json() or {}
+    user_id = data.get("user_id", "user_default")
+    message = data.get("message", "").strip()
+
+    if not message:
+        return jsonify({"error": "No message provided"}), 400
+
+    try:
+        agent = _get_agent(user_id)
+        response = agent.chat(message)
+        return jsonify({"response": response})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+# ---------------------------------------------------------------------------
+# Start-up
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    from agent.config import USE_BEDROCK, BEDROCK_MODEL_ID, ANTHROPIC_MODEL
+
+    provider = f"AWS Bedrock ({BEDROCK_MODEL_ID})" if USE_BEDROCK else f"Anthropic API ({ANTHROPIC_MODEL})"
+    print("=" * 60)
+    print("  🎬  CineBot – Agentic Movie Booking")
+    print(f"  AI Provider : {provider}")
+    print(f"  Serving     : http://0.0.0.0:{PORT}")
+    print(f"  API docs    : http://0.0.0.0:{PORT}/api/health")
+    print("=" * 60)
+
+    app.run(host="0.0.0.0", port=PORT, debug=False)
