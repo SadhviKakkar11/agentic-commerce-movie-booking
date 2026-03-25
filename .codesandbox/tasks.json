@@ -1,0 +1,27 @@
+{
+  "$schema": "https://codesandbox.io/schemas/tasks.json",
+  "setupTasks": [
+    {
+      "name": "Install Python dependencies",
+      "command": "pip install -r requirements.txt"
+    },
+    {
+      "name": "Ensure gunicorn is installed",
+      "command": "pip install gunicorn"
+    }
+  ],
+  "tasks": {
+    "start": {
+      "name": "Start CineBot App",
+      "command": "gunicorn codesandbox_app:app --bind 0.0.0.0:${PORT:-3000} --workers 1 --threads 4 --timeout 120 --log-level info",
+      "runAtStart": true,
+      "preview": {
+        "port": 3000
+      }
+    },
+    "start-cloudshell": {
+      "name": "Start CineBot (AWS CloudShell, port 8080)",
+      "command": "PORT=8080 gunicorn codesandbox_app:app --bind 0.0.0.0:8080 --workers 1 --threads 4 --timeout 120 --log-level info"
+    }
+  }
+}
