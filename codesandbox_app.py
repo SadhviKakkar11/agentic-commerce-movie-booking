@@ -184,7 +184,7 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
     <span>👤 Ram Kumar</span>
     <span style="color:rgba(255,255,255,.4)">·</span>
     <span>ICICI Bank</span>
-    <span class="pts">⭐ 1000 pts</span>
+    <span class="pts" id="ptsDisplay">⭐ 1000 pts</span>
   </div>
 </div>
 
@@ -257,6 +257,12 @@ function send(){
     btn.disabled=false;
     if(d.response) addMsg(d.response,'bot',true);
     else addMsg('❌ Error: '+(d.error||'Unknown error'),'bot',false);
+    // Refresh points badge after every bot reply
+    fetch('/api/users/'+USER_ID+'/profile').then(r=>r.json()).then(p=>{
+      if(p.success && p.profile && p.profile.cc_points !== undefined){
+        document.getElementById('ptsDisplay').textContent='⭐ '+p.profile.cc_points+' pts';
+      }
+    }).catch(()=>{});
   })
   .catch(e=>{
     rmTyping(tid);
