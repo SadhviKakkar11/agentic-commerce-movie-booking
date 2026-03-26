@@ -105,7 +105,7 @@ class MovieBookingAgent:
         }
         
         request_body = {
-            "anthropic_version": "bedrock-2023-06-01",
+            "anthropic_version": "bedrock-2023-05-31",
             "max_tokens": 2048,
             "system": [system_prompt_obj],
             "tools": TOOLS,
