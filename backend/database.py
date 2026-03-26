@@ -180,27 +180,30 @@ class MockDatabase:
         return {theatre['id']: Theatre(**theatre) for theatre in theatres_data}
     
     def _init_shows(self) -> Dict[int, Show]:
-        """Initialize sample shows for tomorrow"""
+        """Initialize sample shows for the next 7 days"""
         shows_data = []
         show_id = 1
         
-        # Create shows for different movies at different theatres
-        times = ["2:00 PM", "5:30 PM", "8:00 PM", "10:30 PM"]
-        tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+        times = ["11:00 AM", "2:00 PM", "5:30 PM", "9:00 PM"]
+        today = datetime.now()
         
-        for movie_id in [1, 2, 3, 4, 5, 6, 7, 8]:
-            for theatre_id in [1, 2, 3]:
-                for idx, time in enumerate(times[:2]):  # 2 shows per theatre per movie
-                    shows_data.append({
-                        "id": show_id,
-                        "movie_id": movie_id,
-                        "theatre_id": theatre_id,
-                        "show_time": time,
-                        "date": tomorrow,
-                        "price": 500.00 if theatre_id == 3 else (600.00 if theatre_id == 1 else 1200.00),
-                        "available_seats": 80 + (show_id % 30)
-                    })
-                    show_id += 1
+        # Generate shows for today + next 7 days so any day the user asks for is covered
+        dates = [(today + timedelta(days=d)).strftime("%Y-%m-%d") for d in range(0, 8)]
+        
+        for date in dates:
+            for movie_id in [1, 2, 3, 4, 5, 6, 7, 8]:
+                for theatre_id in [1, 2, 3]:
+                    for time in times[:2]:  # 2 shows per theatre per movie per day
+                        shows_data.append({
+                            "id": show_id,
+                            "movie_id": movie_id,
+                            "theatre_id": theatre_id,
+                            "show_time": time,
+                            "date": date,
+                            "price": 500.00 if theatre_id == 3 else (600.00 if theatre_id == 1 else 1200.00),
+                            "available_seats": 80 + (show_id % 30)
+                        })
+                        show_id += 1
         
         return {show['id']: Show(**show) for show in shows_data}
     
