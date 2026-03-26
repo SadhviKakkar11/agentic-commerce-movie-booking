@@ -132,14 +132,21 @@ class CreditCardRewardsDB:
         ]
     
     def redeem_points(self, user_id: str, points: int) -> Dict:
-        """Redeem CC points"""
+        """Redeem CC points and deduct from user profile"""
+        from .user_profiles import user_profile_manager
         amount_redeemed = points * self.redemption_rate
-        
+
+        # Deduct points from the user's profile
+        profile = user_profile_manager.get_user_profile(user_id)
+        if profile:
+            profile.cc_points = max(0, profile.cc_points - points)
+
         return {
             "success": True,
             "user_id": user_id,
             "points_redeemed": points,
             "amount_credited": amount_redeemed,
+            "remaining_points": profile.cc_points if profile else 0,
             "redemption_id": f"REDEEM_{user_id}_{datetime.now().timestamp()}",
             "timestamp": datetime.now().isoformat()
         }
