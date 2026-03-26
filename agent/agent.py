@@ -5,6 +5,7 @@ Supports both direct Anthropic API and AWS Bedrock
 import anthropic
 import boto3
 import json
+from datetime import datetime
 from .config import (
     USE_BEDROCK, ANTHROPIC_API_KEY, ANTHROPIC_MODEL,
     AWS_REGION, BEDROCK_MODEL_ID, DEBUG
@@ -20,7 +21,12 @@ class MovieBookingAgent:
         """Initialize the agent"""
         self.user_id = user_id
         self.conversation_history = []
-        self.system_prompt = SYSTEM_PROMPT
+        # Inject today's date so Claude can correctly resolve "this Sunday", "tomorrow", etc.
+        today = datetime.now()
+        date_context = (
+            f"\nTODAY'S DATE: {today.strftime('%A, %Y-%m-%d')} (use this to resolve relative dates like 'this Sunday', 'tomorrow', etc.)\n"
+        )
+        self.system_prompt = date_context + SYSTEM_PROMPT
         
         # Initialize API client
         if USE_BEDROCK:
