@@ -46,7 +46,7 @@ class BookingPortalManager:
                 "date": date,
                 "timing": "1:30 PM",
                 "format": "Recliner",
-                "price": 350,
+                "price": 600,
                 "available_seats": 45,
                 "offer": "BOGO"
             },
