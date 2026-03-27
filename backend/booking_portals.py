@@ -217,7 +217,8 @@ class ExecutionEngine:
         self.payment_gateway = payment_gateway
     
     def execute_booking(self, user_id: str, show_id: str, num_seats: int,
-                       portal: str, cc_points_to_redeem: int = 0) -> Dict:
+                       portal: str, cc_points_to_redeem: int = 0,
+                       price_per_seat: int = 600, offer: str = "None") -> Dict:
         """Execute complete booking with multiple steps"""
         
         results = {
@@ -242,8 +243,14 @@ class ExecutionEngine:
             amount_from_points = redemption.get("amount_credited", 0)
         
         # Step 3: Process payment
-        ticket_price = 350 * num_seats  # Mock price calculation
-        amount_to_pay = ticket_price - amount_from_points + self.payment_gateway.processing_fee
+        # Apply BOGO: every 2 seats, 1 is free (pay for ceil(num_seats / 2))
+        if offer == "BOGO":
+            paid_seats = (num_seats + 1) // 2
+        else:
+            paid_seats = num_seats
+        ticket_price = price_per_seat * paid_seats
+        # processing_fee is added inside process_payment — do not add it here
+        amount_to_pay = max(0.0, ticket_price - amount_from_points)
         
         payment = self.payment_gateway.process_payment(user_id, amount_to_pay)
         results["steps"]["payment"] = payment
