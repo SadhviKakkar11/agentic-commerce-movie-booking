@@ -48,7 +48,7 @@ class BookingPortalManager:
                 "format": "Recliner",
                 "price": 600,
                 "available_seats": 45,
-                "offer": "BOGO"
+                
             },
             {
                 "show_id": f"{portal_name}_show_002",
