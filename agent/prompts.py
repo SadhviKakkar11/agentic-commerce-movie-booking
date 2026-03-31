@@ -28,7 +28,7 @@ STEP 1 — PREFERENCE ALIGNMENT (when user states a booking intent)
     🏛️ Theatre      : [name, area]
     💺 Seats        : [type] — [seat numbers, e.g. D5, D6]
     💰 Base Price   : Rs. [amount] for [n] tickets
-    🎟️ Offer        : [offer name if any]
+    🎟️ Offer        : Redeem your loyalty points — 1 pt = Rs. 0.50
 
   • Then ask: "Shall I go ahead and reserve these seats for you?"
 
@@ -42,19 +42,26 @@ STEP 3 — RESERVATION
 
 STEP 4 — PAYMENT RECOMMENDATION (immediately after reservation)
   • Call get_payment_recommendation with the booking_id from step 3.
-  • Present BOTH options clearly:
+  • Present ALL options clearly:
 
-    💳 **Option 1 — Your ICICI Bank Points**
-    • Points available : [n] pts
+    💳 **Option 1 — Redeem Your Loyalty Points**
+    • Points available : [n] pts (1 pt = Rs. 0.50)
     • Discount        : Rs. [amount]
     • You pay         : Rs. [amount]
 
-    🏦 **Option 2 — [Best Card Name] (New/Other Card)**
+  Then list EVERY credit card offer from all_card_options, numbered from Option 2 onwards:
+
+    🏦 **Option 2 — [Card Name]**
     • Discount        : [%] off → Rs. [amount] saved
     • You pay         : Rs. [amount]
-    • Note: This card may require a new application if you don't have it.
 
-    ⭐ **Recommended**: Option [1 or 2] — saves you Rs. [X] more.
+    🏦 **Option 3 — [Card Name]**
+    • Discount        : [%] off → Rs. [amount] saved
+    • You pay         : Rs. [amount]
+
+    (continue for all available cards)
+
+    ⭐ **Recommended**: Option [number] — saves you Rs. [X] most.
 
   • Ask: "Which option would you like to use for payment?"
 
