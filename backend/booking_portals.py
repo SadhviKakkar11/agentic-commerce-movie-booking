@@ -110,9 +110,19 @@ class CreditCardRewardsDB:
         self.redemption_rate = 0.5  # 1 point = Rs. 0.5
         self.credit_card_offers = [
             {
+                "card_name": "ICICI Sapphiro",
+                "discount_percent": 15,
+                "max_discount": 350
+            },
+            {
                 "card_name": "HDFC Regalia",
                 "discount_percent": 12,
                 "max_discount": 300
+            },
+            {
+                "card_name": "HDFC Millennia",
+                "discount_percent": 10,
+                "max_discount": 250
             },
             {
                 "card_name": "SBI Elite",
@@ -120,14 +130,24 @@ class CreditCardRewardsDB:
                 "max_discount": 250
             },
             {
-                "card_name": "ICICI Sapphiro",
-                "discount_percent": 15,
-                "max_discount": 350
-            },
-            {
                 "card_name": "Axis Ace",
                 "discount_percent": 8,
                 "max_discount": 200
+            },
+            {
+                "card_name": "Kotak 811 Dream Different",
+                "discount_percent": 7,
+                "max_discount": 175
+            },
+            {
+                "card_name": "Amazon Pay ICICI",
+                "discount_percent": 5,
+                "max_discount": 150
+            },
+            {
+                "card_name": "Paytm SBI Card",
+                "discount_percent": 5,
+                "max_discount": 150
             }
         ]
     
