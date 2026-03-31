@@ -105,8 +105,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <style>
 :root{
   --red:#E50914;--red2:#B20710;
-  --bg:#111;--surface:#1e1e1e;--surface2:#2a2a2a;--surface3:#333;
-  --text:#e8e8e8;--muted:#888;--accent:#f5a623;
+  --bg:#f7f7f8;--surface:#ffffff;--surface2:#f0f0f2;--surface3:#e2e2e6;
+  --text:#1a1a1a;--muted:#6b6b6b;--accent:#d97706;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -121,7 +121,7 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 /* ── chat area ──────────────────────────────────────── */
 .chat-wrap{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:14px}
 .chat-wrap::-webkit-scrollbar{width:5px}
-.chat-wrap::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+.chat-wrap::-webkit-scrollbar-thumb{background:#c8c8cc;border-radius:4px}
 
 .msg{display:flex;gap:10px;max-width:82%;animation:pop .25s ease}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -144,9 +144,9 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 .bubble ul,.bubble ol{margin:4px 0 4px 20px}
 .bubble li{margin:3px 0}
 .bubble strong{color:var(--accent)}
-.bubble em{color:#ccc}
-.bubble code{background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px;font-size:12px;font-family:monospace}
-.bubble pre{background:rgba(0,0,0,.35);padding:10px;border-radius:8px;overflow-x:auto;margin:8px 0}
+.bubble em{color:#555}
+.bubble code{background:rgba(0,0,0,.07);padding:1px 5px;border-radius:3px;font-size:12px;font-family:monospace}
+.bubble pre{background:rgba(0,0,0,.05);padding:10px;border-radius:8px;overflow-x:auto;margin:8px 0}
 .bubble hr{border:none;border-top:1px solid var(--surface3);margin:8px 0}
 .bubble blockquote{border-left:3px solid var(--accent);padding-left:10px;color:var(--muted);margin:6px 0}
 .bubble table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px}
@@ -169,7 +169,7 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 .row input:focus{border-color:var(--red)}
 .row input::placeholder{color:var(--muted)}
 .send{background:var(--red);border:none;border-radius:50%;width:42px;height:42px;color:#fff;font-size:19px;cursor:pointer;transition:background .18s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.send:hover{background:var(--red2)}.send:disabled{background:#444;cursor:not-allowed}
+.send:hover{background:var(--red2)}.send:disabled{background:#bbb;cursor:not-allowed}
 
 /* constraint tag */
 .tag{background:rgba(229,9,20,.15);border:1px solid rgba(229,9,20,.3);color:#f87171;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
@@ -194,7 +194,6 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
     <div class="avatar bot">🤖</div>
     <div class="bubble">
       <strong>Hi Ram! 👋 I'm CineBot, your personal movie booking assistant.</strong><br><br>
-      I can see you have <strong>1000 ICICI Bank reward points</strong> — let's put them to good use!<br><br>
       Just tell me what you'd like to watch and when. I'll check your preferences, recommend the best theatre &amp; seats, and handle everything from booking to payment. 🎬
     </div>
   </div>
