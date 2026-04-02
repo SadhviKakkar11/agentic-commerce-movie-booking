@@ -379,9 +379,9 @@ function maybeShowActions(bubble, text){
   const d=document.createElement('div');
   d.className='action-btns';
   [
-    ['ab-yes','\u2705 Yes, Book It!','Yes, go ahead and book it'],
-    ['ab-seat','\ud83d\udcba Change Seats','Change the seats, suggest different seats based on my preferences'],
-    ['ab-theatre','\ud83c\udfdb\ufe0f Change Theatre','Change the theatre, suggest another theatre based on my preferences']
+    ['ab-yes','Yes, Book It!','Yes, go ahead and book it'],
+    ['ab-seat','Change Seats','Change the seats, suggest different seats based on my preferences'],
+    ['ab-theatre','Change Theatre','Change the theatre, suggest another theatre based on my preferences']
   ].forEach(function(item){
     var btn=document.createElement('button');
     btn.className='ab '+item[0];
