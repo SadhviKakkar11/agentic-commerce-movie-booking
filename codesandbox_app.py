@@ -186,28 +186,27 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 .stage-line.done{background:#16a34a}
 
 /* ── Payment overlay ────────────────────────────────── */
-.pay-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(3px)}
+.pay-overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center;z-index:200;backdrop-filter:blur(4px)}
 .pay-overlay.open{display:flex}
-.pay-panel{background:var(--surface);border-radius:18px;padding:28px 28px 22px;width:min(520px,96vw);box-shadow:0 24px 60px rgba(0,0,0,.35);animation:pop .25s ease}
-.pay-panel h3{font-size:16px;font-weight:700;margin-bottom:4px}
-.pay-panel .sub{font-size:12px;color:var(--muted);margin-bottom:18px}
-.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
-.cc-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:14px;padding:16px 18px;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative;overflow:hidden}
-.cc-card:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 8px 24px rgba(229,9,20,.25)}
-.cc-card.selected{border-color:var(--accent);box-shadow:0 8px 24px rgba(217,119,6,.3)}
-.cc-card .net{font-size:10px;font-weight:600;letter-spacing:.8px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:8px}
-.cc-card .num{font-size:14px;font-weight:600;color:#fff;letter-spacing:2px;margin-bottom:10px;font-family:monospace}
-.cc-card .bank{font-size:11px;color:rgba(255,255,255,.7);font-weight:500}
-.cc-card .badge{position:absolute;top:10px;right:12px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px}
-.badge-visa{background:#1a6ed8;color:#fff}
-.badge-mc{background:#eb001b;color:#fff}
-.badge-rupay{background:#138e4a;color:#fff}
-.pay-total{background:var(--surface2);border-radius:10px;padding:12px 16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.pay-total strong{font-size:16px;color:var(--accent)}
-.pay-confirm-btn{width:100%;background:var(--red);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;transition:background .18s}
-.pay-confirm-btn:hover{background:var(--red2)}
-.pay-confirm-btn:disabled{background:#bbb;cursor:not-allowed}
-.pay-cancel{display:block;text-align:center;margin-top:10px;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline}
+.pay-panel{background:var(--bg);border-radius:22px 22px 0 0;padding:24px 20px 32px;width:min(780px,100vw);box-shadow:0 -12px 50px rgba(0,0,0,.3);animation:slideup .28s ease}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.pay-panel-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.pay-panel-hdr h3{font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.pay-cancel-x{background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;line-height:1}
+.opt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:14px}
+.opt-card{background:var(--surface);border:2px solid var(--surface3);border-radius:16px;padding:18px 16px 14px;cursor:pointer;position:relative;transition:all .2s;display:flex;flex-direction:column;gap:8px}
+.opt-card:hover{border-color:var(--red);box-shadow:0 6px 20px rgba(229,9,20,.15);transform:translateY(-3px)}
+.opt-card.best{border-color:var(--accent);box-shadow:0 4px 16px rgba(217,119,6,.2)}
+.opt-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#111;font-size:9px;font-weight:800;padding:3px 10px;border-radius:10px;letter-spacing:.6px;white-space:nowrap}
+.own-badge{position:absolute;top:10px;right:10px;background:#1d4ed8;color:#fff;font-size:8px;font-weight:800;padding:2px 8px;border-radius:8px;letter-spacing:.5px}
+.pref-badge{position:absolute;top:10px;right:10px;background:#16a34a;color:#fff;font-size:8px;font-weight:800;padding:2px 8px;border-radius:8px;letter-spacing:.5px}
+.opt-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.3}
+.opt-sub{font-size:11px;color:var(--muted)}
+.opt-row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-top:1px solid var(--surface3)}
+.opt-row span:last-child{font-weight:600;color:var(--text)}
+.opt-pay{margin-top:6px;background:var(--red);color:#fff;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;transition:background .18s;width:100%}
+.opt-card.best .opt-pay{background:var(--accent);color:#111}
+.opt-pay:hover{opacity:.88}
 
 /* ── Booking confirmed card ─────────────────────────── */
 .confirmed-card{background:linear-gradient(135deg,#064e3b,#065f46);border-radius:14px;padding:20px;margin:6px 0;color:#fff;font-size:13px}
@@ -272,40 +271,11 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 <!-- Payment overlay -->
 <div class="pay-overlay" id="payOverlay">
   <div class="pay-panel">
-    <h3>💳 Select Payment Card</h3>
-    <p class="sub">Choose a card to complete your booking</p>
-    <div class="card-grid">
-      <div class="cc-card" onclick="selectCard(this,'ICICI Bank Platinum','****4521')">
-        <div class="net">Visa</div>
-        <div class="num">•••• •••• •••• 4521</div>
-        <div class="bank">ICICI Bank Platinum</div>
-        <span class="badge badge-visa">VISA</span>
-      </div>
-      <div class="cc-card" onclick="selectCard(this,'HDFC Regalia','****7832')">
-        <div class="net">Mastercard</div>
-        <div class="num">•••• •••• •••• 7832</div>
-        <div class="bank">HDFC Regalia</div>
-        <span class="badge badge-mc">MC</span>
-      </div>
-      <div class="cc-card" onclick="selectCard(this,'SBI Card Elite','****2190')">
-        <div class="net">Visa</div>
-        <div class="num">•••• •••• •••• 2190</div>
-        <div class="bank">SBI Card Elite</div>
-        <span class="badge badge-visa">VISA</span>
-      </div>
-      <div class="cc-card" onclick="selectCard(this,'Axis Bank Magnus','****6647')">
-        <div class="net">RuPay</div>
-        <div class="num">•••• •••• •••• 6647</div>
-        <div class="bank">Axis Bank Magnus</div>
-        <span class="badge badge-rupay">RUPAY</span>
-      </div>
+    <div class="pay-panel-hdr">
+      <h3>💳 Payment Options &nbsp;·&nbsp; Compare &amp; Choose</h3>
+      <button class="pay-cancel-x" onclick="closePayment()">✕</button>
     </div>
-    <div class="pay-total">
-      <span>Total payable</span>
-      <strong id="payAmount">₹0</strong>
-    </div>
-    <button class="pay-confirm-btn" id="payBtn" disabled onclick="confirmPayment()">Confirm Payment</button>
-    <span class="pay-cancel" onclick="closePayment()">Cancel</span>
+    <div class="opt-grid" id="optGrid"></div>
   </div>
 </div>
 
@@ -444,44 +414,85 @@ function playChime(){
 // ── Payment flow ─────────────────────────────────────
 let _pendingBooking = {};
 
-function maybeShowPayment(text){
-  // Advance stage based on keywords in bot reply
-  const tl = text.toLowerCase();
-  if(/confirm|book|paid|payment success/i.test(tl)) setStage(3);
-  else if(/select.*card|payment|checkout/i.test(tl)) setStage(2);
-  else if(/show|seat|theatre|available|option/i.test(tl)) setStage(1);
+function parseOptions(text){
+  // Each option block: "Option N — Title" followed by bullet lines
+  const optRe = /Option\s*(\d+)\s*[—–-]+\s*([^\n]+)/gi;
+  const opts = [];
+  let m;
+  while((m = optRe.exec(text)) !== null){
+    const num   = m[1];
+    const title = m[2].trim();
+    const start = m.index + m[0].length;
+    const nextM = optRe.exec(text);
+    const block = nextM ? text.slice(start, nextM.index) : text.slice(start);
+    if(nextM) optRe.lastIndex = nextM.index;
 
-  // Trigger payment panel when agent response contains a price/total line
-  const m = text.match(/(?:total|amount|pay(?:able)?)\D{0,12}₹\s*([\d,]+)/i)
-            || text.match(/₹\s*([\d,]+)/);
-  if(m){
-    _pendingBooking.amount = '₹'+m[1].replace(/,/g,'').replace(/^(\d+)$/,n=>Number(n).toLocaleString('en-IN'));
-    document.getElementById('payAmount').textContent = _pendingBooking.amount;
-    document.getElementById('payOverlay').classList.add('open');
-    setStage(2);
+    const bullets = [...block.matchAll(/[•*-]\s*([^\n]+)/g)].map(b=>b[1].trim());
+
+    const payM = block.match(/you pay[:\s]+(?:Rs\.?\s*|₹\s*)([\d,]+(?:\.\d+)?)/i)
+                 || block.match(/(?:Rs\.?\s*|₹\s*)([\d,]+(?:\.\d+)?)/i);
+    const amt = payM ? Math.round(parseFloat(payM[1].replace(/,/g,''))) : null;
+
+    // Detect if this is a card the user already owns (known bank names)
+    const knownBanks = /icici|hdfc|sbi|axis|kotak|yes bank|indusind|idfc|loyalty|reward.*point/i;
+    const ownThis = knownBanks.test(title);
+
+    // Detect if bot marked it as recommended/preferred
+    const preferred = /recommend|prefer|best.*option|option.*1/i.test(block + title);
+
+    opts.push({num, title, bullets, amt, ownThis, preferred});
   }
+  return opts;
 }
 
-function selectCard(el, bank, num){
-  document.querySelectorAll('.cc-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  _pendingBooking.card = bank+' '+num;
-  document.getElementById('payBtn').disabled = false;
+function maybeShowPayment(text){
+  const tl = text.toLowerCase();
+  if(/confirm|book|paid|payment success/i.test(tl)) { setStage(3); return; }
+  else if(/show|seat|theatre|available/i.test(tl)) setStage(1);
+
+  const opts = parseOptions(text);
+  if(!opts.length) return;
+
+  setStage(2);
+  const grid = document.getElementById('optGrid');
+  grid.innerHTML = '';
+
+  const minAmt = Math.min(...opts.filter(o=>o.amt).map(o=>o.amt));
+
+  opts.forEach(opt=>{
+    const isBest = opt.amt && opt.amt === minAmt;
+    const card = document.createElement('div');
+    card.className = 'opt-card' + (isBest ? ' best' : '');
+
+    let inner = isBest ? '<span class="opt-badge">BEST DEAL</span>' : '';
+    if(opt.preferred && !isBest) inner += '<span class="pref-badge">PREFERRED</span>';
+    else if(opt.ownThis && !isBest && !opt.preferred) inner += '<span class="own-badge">YOU OWN THIS</span>';
+    inner += `<div class="opt-name">${esc(opt.title)}</div>`;
+    opt.bullets.forEach(bl=>{
+      const parts = bl.split(':');
+      const label = esc(parts[0]);
+      const val   = parts.length>1 ? esc(parts.slice(1).join(':').trim()) : '';
+      inner += `<div class="opt-row"><span>${label}</span><span>${val}</span></div>`;
+    });
+    const amtTxt = opt.amt ? '₹'+opt.amt.toLocaleString('en-IN') : 'Pay';
+    inner += `<button class="opt-pay" onclick="confirmPayment('${esc(opt.title)}','${amtTxt}')">Pay ${amtTxt}</button>`;
+    card.innerHTML = inner;
+    grid.appendChild(card);
+  });
+
+  document.getElementById('payOverlay').classList.add('open');
 }
 
 function closePayment(){
   document.getElementById('payOverlay').classList.remove('open');
-  document.querySelectorAll('.cc-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('payBtn').disabled = true;
 }
 
-function confirmPayment(){
+function confirmPayment(optName, amt){
   closePayment();
   setStage(3);
   playChime();
-  const card = _pendingBooking.card || 'Card';
-  const amt  = _pendingBooking.amount || '';
-  // Show a booking-confirmed card in the chat
+  const card = optName || _pendingBooking.card || 'Payment option';
+  const amtTxt = amt || _pendingBooking.amount || '';
   const wrap = document.createElement('div');
   wrap.className = 'msg bot';
   const av = document.createElement('div');
@@ -491,8 +502,8 @@ function confirmPayment(){
   b.innerHTML = `<div class="confirmed-card">
     <span class="tick">✅</span>
     <h4>Booking Confirmed!</h4>
-    <div class="info-row"><span>Card used</span><span>${esc(card)}</span></div>
-    <div class="info-row"><span>Amount charged</span><span>${esc(amt)}</span></div>
+    <div class="info-row"><span>Option chosen</span><span>${esc(card)}</span></div>
+    <div class="info-row"><span>Amount charged</span><span>${esc(amtTxt)}</span></div>
     <div class="info-row"><span>Status</span><span>Payment successful</span></div>
   </div>`;
   wrap.appendChild(av); wrap.appendChild(b);
