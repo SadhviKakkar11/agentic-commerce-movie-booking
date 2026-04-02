@@ -286,15 +286,11 @@ marked.setOptions({breaks:true, gfm:true});
 const USER_ID = 'user_ram_001';
 const chat    = document.getElementById('chatArea');
 
-// hint: fill the input box but do NOT auto-send — user types and presses Send
+// hint: fill input and auto-send
 function hint(t){
-  const inp=document.getElementById('inp');
-  inp.value=t;
-  inp.focus();
-  // place cursor at end
-  inp.setSelectionRange(t.length, t.length);
+  document.getElementById('inp').value=t;
+  send();
 }
-// qs kept for backward compat but now same as hint
 function qs(t){hint(t);}
 
 function send(){
