@@ -306,6 +306,7 @@ marked.parse = marked;
 const USER_ID = 'user_ram_001';
 const chat    = document.getElementById('chatArea');
 let _lastBotText = '';
+let _bookingInProgress = false;
 
 // hint: fill input and focus (let user edit or press Enter/send)
 function hint(t){
@@ -377,6 +378,7 @@ function addMsg(text, who, md){
 
 // ── Booking action buttons after recommendation ─────
 function maybeShowActions(bubble, text){
+  if(_bookingInProgress) return;
   if(!/shall i|should i|go ahead|reserve these|confirm.*seat|want me to book/i.test(text.toLowerCase())) return;
   const d=document.createElement('div');
   d.className='action-btns';
@@ -392,11 +394,12 @@ function maybeShowActions(bubble, text){
       return function(){
         container.querySelectorAll('button').forEach(function(b){b.disabled=true;b.style.opacity='0.5';b.style.cursor='default';});
         if(cls==='ab-yes'){
+          _bookingInProgress = true;
           // Show payment options from the last bot message directly - no agent call
           const opts=parseOptions(_lastBotText);
           if(opts.length){ maybeShowPayment(_lastBotText); return; }
-          // Fallback: ask agent for payment options (faster than full booking)
-          hint('What are the payment options for this booking?');
+          // Fallback: send booking confirmation intent to agent
+          hint('Yes, go ahead and book it');
           send();
         } else {
           hint(msg);
@@ -537,6 +540,7 @@ function maybeShowPayment(text){
   });
 
   document.getElementById('payOverlay').classList.add('open');
+  _bookingInProgress = false;
 }
 
 function closePayment(){
@@ -547,6 +551,7 @@ function confirmPayment(optName, amt){
   closePayment();
   setStage(3);
   playChime();
+  _bookingInProgress = false;
   const card = optName || _pendingBooking.card || 'Payment option';
   const amtTxt = amt || _pendingBooking.amount || '';
   const wrap = document.createElement('div');
