@@ -306,10 +306,12 @@ marked.parse = marked;
 const USER_ID = 'user_ram_001';
 const chat    = document.getElementById('chatArea');
 
-// hint: fill input and auto-send
+// hint: fill input and focus (let user edit or press Enter/send)
 function hint(t){
-  document.getElementById('inp').value=t;
-  send();
+  const inp=document.getElementById('inp');
+  inp.value=t;
+  inp.focus();
+  inp.setSelectionRange(t.length,t.length);
 }
 function qs(t){hint(t);}
 
@@ -483,8 +485,8 @@ function parseOptions(text){
 
 function maybeShowPayment(text){
   const tl = text.toLowerCase();
-  if(/confirm|book|paid|payment success/i.test(tl)) { setStage(3); return; }
-  else if(/show|seat|theatre|available/i.test(tl)) setStage(1);
+  if(/\bconfirmed\b|\bpaid\b|payment success|booking confirmed/i.test(tl)) { setStage(3); return; }
+  else if(/\bshow\b|seat|theatre|available/i.test(tl)) setStage(1);
 
   const opts = parseOptions(text);
   if(!opts.length) return;
