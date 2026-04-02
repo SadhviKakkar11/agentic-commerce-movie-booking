@@ -101,7 +101,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CineBot – Movie Ticket Booking</title>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 :root{
   --red:#E50914;--red2:#B20710;
@@ -281,7 +280,7 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-marked.setOptions({breaks:true, gfm:true});
+marked.use({breaks:true, gfm:true});
 
 const USER_ID = 'user_ram_001';
 const chat    = document.getElementById('chatArea');
