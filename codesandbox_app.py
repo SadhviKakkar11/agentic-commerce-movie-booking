@@ -380,21 +380,23 @@ function maybeShowActions(bubble, text){
   const d=document.createElement('div');
   d.className='action-btns';
   [
-    ['ab-yes','Yes, Book It!','Yes, go ahead and book it', true],
-    ['ab-seat','Change Seats','Change the seats, suggest different seats based on my preferences', true],
-    ['ab-theatre','Change Theatre','Change the theatre, suggest another theatre based on my preferences', true]
+    ['ab-yes','Yes, Book It!','Yes, go ahead and book it', true, false],
+    ['ab-seat','Change Seats','Change the seats, suggest different seats based on my preferences', true, false],
+    ['ab-theatre','Change Theatre','Change the theatre, suggest another theatre based on my preferences', true, false]
   ].forEach(function(item){
     var btn=document.createElement('button');
     btn.className='ab '+item[0];
     btn.textContent=item[1];
-    btn.onclick=(function(msg, autoSend, container){
+    btn.onclick=(function(msg, autoSend, showConfirm, container){
       return function(){
         // Disable all action buttons immediately to prevent double-sends
         container.querySelectorAll('button').forEach(function(b){b.disabled=true;b.style.opacity='0.5';b.style.cursor='default';});
+        // For "Yes Book It" show confirmed card right away (don't wait for bot)
+        if(showConfirm) confirmPayment('Booking confirmed', '');
         hint(msg);
         if(autoSend) send();
       };
-    })(item[2], item[3], d);
+    })(item[2], item[3], item[4], d);
     d.appendChild(btn);
   });
   bubble.appendChild(d);
@@ -493,11 +495,12 @@ function parseOptions(text){
 
 function maybeShowPayment(text){
   const tl = text.toLowerCase();
-  if(/confirmed|paid|payment success|booking confirmed/i.test(tl)) { setStage(3); return; }
-  else if(/show|seat|theatre|available/i.test(tl)) setStage(1);
-
   const opts = parseOptions(text);
-  if(!opts.length) return;
+  if(!opts.length){
+    if(/confirmed|paid|payment success|booking confirmed/i.test(tl)){ setStage(3); return; }
+    if(/show|seat|theatre|available/i.test(tl)) setStage(1);
+    return;
+  }
 
   setStage(2);
   const grid = document.getElementById('optGrid');
