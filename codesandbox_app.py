@@ -379,14 +379,19 @@ function maybeShowActions(bubble, text){
   const d=document.createElement('div');
   d.className='action-btns';
   [
-    ['ab-yes','Yes, Book It!','Yes, go ahead and book it'],
-    ['ab-seat','Change Seats','Change the seats, suggest different seats based on my preferences'],
-    ['ab-theatre','Change Theatre','Change the theatre, suggest another theatre based on my preferences']
+    ['ab-yes','Yes, Book It!','Yes, go ahead and book it', true],
+    ['ab-seat','Change Seats','Change the seats, suggest different seats based on my preferences', true],
+    ['ab-theatre','Change Theatre','Change the theatre, suggest another theatre based on my preferences', true]
   ].forEach(function(item){
     var btn=document.createElement('button');
     btn.className='ab '+item[0];
     btn.textContent=item[1];
-    btn.onclick=(function(msg){return function(){hint(msg);};})(item[2]);
+    btn.onclick=(function(msg, autoSend){
+      return function(){
+        hint(msg);
+        if(autoSend) send();
+      };
+    })(item[2], item[3]);
     d.appendChild(btn);
   });
   bubble.appendChild(d);
