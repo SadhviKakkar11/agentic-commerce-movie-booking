@@ -395,12 +395,13 @@ function maybeShowActions(bubble, text){
         container.querySelectorAll('button').forEach(function(b){b.disabled=true;b.style.opacity='0.5';b.style.cursor='default';});
         if(cls==='ab-yes'){
           _bookingInProgress = true;
-          // Show payment options from the last bot message directly - no agent call
+          // Try parsed options first, then synthesized, then direct confirm
           const opts=parseOptions(_lastBotText);
-          if(opts.length){ maybeShowPayment(_lastBotText); return; }
-          // Fallback: send booking confirmation intent to agent
-          hint('Yes, go ahead and book it');
-          send();
+          if(opts.length){ showPaymentPanel(opts); return; }
+          const fallback=buildFallbackOptions(_lastBotText);
+          if(fallback.length){ showPaymentPanel(fallback); return; }
+          // No price info at all — show confirmed card directly
+          confirmPayment('Booking','');
         } else {
           hint(msg);
           if(autoSend) send();
@@ -472,6 +473,72 @@ function playChime(){
 // ── Payment flow ─────────────────────────────────────
 let _pendingBooking = {};
 
+function buildFallbackOptions(text){
+  // Extract base price from bot recommendation message
+  const priceM = text.match(/(?:base price|price)[:\s]+(?:Rs\.?\s*|₹\s*)([\d,]+)/i)
+               || text.match(/(?:Rs\.?\s*|₹\s*)([\d,]+)(?:\s*for\s*\d+\s*ticket)/i)
+               || text.match(/(?:Rs\.?\s*|₹\s*)([\d,]+)/i);
+  if(!priceM) return [];
+  const base = Math.round(parseFloat(priceM[1].replace(/,/g,'')));
+  if(base < 50) return []; // sanity check — avoid matching small numbers
+
+  // Extract loyalty points rate if mentioned
+  const rateM = text.match(/1\s*pt\s*=\s*Rs\.?\s*([\d.]+)/i);
+  const opts = [];
+
+  // Option 1 — ICICI Credit Card (base price)
+  opts.push({num:'1',title:'ICICI Credit Card',
+    bullets:['Type: Credit Card','Cashback: 5% on entertainment'],
+    amt:base, ownThis:true, preferred:false});
+
+  if(rateM){
+    const rate   = parseFloat(rateM[1]);
+    const pts    = 1000; // user's loyalty points
+    const disc   = Math.min(Math.round(pts * rate), base - 1);
+    const after  = base - disc;
+    opts.push({num:'2',title:'Loyalty Points + ICICI Card',
+      bullets:['Points redeemed: '+pts+' pts','Discount: Rs. '+disc,'Remaining: Credit card'],
+      amt:after, ownThis:true, preferred:true});
+  }
+
+  // Option 3 — UPI
+  opts.push({num:String(opts.length+1),title:'UPI / Net Banking',
+    bullets:['Type: UPI / NetBanking','No extra charges'],
+    amt:base, ownThis:false, preferred:false});
+
+  return opts;
+}
+
+function showPaymentPanel(opts){
+  if(!opts.length) return false;
+  setStage(2);
+  const grid = document.getElementById('optGrid');
+  grid.innerHTML = '';
+  const minAmt = Math.min(...opts.filter(o=>o.amt).map(o=>o.amt));
+  opts.forEach(opt=>{
+    const isBest = opt.amt && opt.amt === minAmt;
+    const card = document.createElement('div');
+    card.className = 'opt-card' + (isBest ? ' best' : '');
+    let inner = isBest ? '<span class="opt-badge">BEST DEAL</span>' : '';
+    if(opt.preferred && !isBest) inner += '<span class="pref-badge">PREFERRED</span>';
+    else if(opt.ownThis && !isBest && !opt.preferred) inner += '<span class="own-badge">YOU OWN THIS</span>';
+    inner += `<div class="opt-name">${esc(opt.title)}</div>`;
+    opt.bullets.forEach(bl=>{
+      const parts = bl.split(':');
+      const label = esc(parts[0]);
+      const val   = parts.length>1 ? esc(parts.slice(1).join(':').trim()) : '';
+      inner += `<div class="opt-row"><span>${label}</span><span>${val}</span></div>`;
+    });
+    const amtTxt = opt.amt ? '₹'+opt.amt.toLocaleString('en-IN') : 'Pay';
+    inner += `<button class="opt-pay" onclick="confirmPayment('${esc(opt.title)}','${amtTxt}')">Pay ${amtTxt}</button>`;
+    card.innerHTML = inner;
+    grid.appendChild(card);
+  });
+  document.getElementById('payOverlay').classList.add('open');
+  _bookingInProgress = false;
+  return true;
+}
+
 function parseOptions(text){
   // Each option block: "Option N — Title" followed by bullet lines
   const optRe = /Option\s*(\d+)\s*[—–-]+\s*([^\\n]+)/gi;
@@ -511,36 +578,7 @@ function maybeShowPayment(text){
     if(/show|seat|theatre|available/i.test(tl)) setStage(1);
     return;
   }
-
-  setStage(2);
-  const grid = document.getElementById('optGrid');
-  grid.innerHTML = '';
-
-  const minAmt = Math.min(...opts.filter(o=>o.amt).map(o=>o.amt));
-
-  opts.forEach(opt=>{
-    const isBest = opt.amt && opt.amt === minAmt;
-    const card = document.createElement('div');
-    card.className = 'opt-card' + (isBest ? ' best' : '');
-
-    let inner = isBest ? '<span class="opt-badge">BEST DEAL</span>' : '';
-    if(opt.preferred && !isBest) inner += '<span class="pref-badge">PREFERRED</span>';
-    else if(opt.ownThis && !isBest && !opt.preferred) inner += '<span class="own-badge">YOU OWN THIS</span>';
-    inner += `<div class="opt-name">${esc(opt.title)}</div>`;
-    opt.bullets.forEach(bl=>{
-      const parts = bl.split(':');
-      const label = esc(parts[0]);
-      const val   = parts.length>1 ? esc(parts.slice(1).join(':').trim()) : '';
-      inner += `<div class="opt-row"><span>${label}</span><span>${val}</span></div>`;
-    });
-    const amtTxt = opt.amt ? '₹'+opt.amt.toLocaleString('en-IN') : 'Pay';
-    inner += `<button class="opt-pay" onclick="confirmPayment('${esc(opt.title)}','${amtTxt}')">Pay ${amtTxt}</button>`;
-    card.innerHTML = inner;
-    grid.appendChild(card);
-  });
-
-  document.getElementById('payOverlay').classList.add('open');
-  _bookingInProgress = false;
+  showPaymentPanel(opts);
 }
 
 function closePayment(){
