@@ -111,93 +111,76 @@ body{background:#F0F4FA;color:#1C2B4A;font-family:'Plus Jakarta Sans',sans-serif
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 @keyframes popIn{0%{opacity:0;transform:scale(0.93)}100%{opacity:1;transform:scale(1)}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
 
-.app{display:flex;height:100vh;overflow:hidden}
+/* ── APP SHELL ── */
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
-/* ── LEFT PANE ── */
-.pane-left{width:270px;flex-shrink:0;display:flex;flex-direction:column;background:white;border-right:1px solid #DDE3EE;height:100vh;overflow:hidden}
-.pl-header{padding:14px 16px 12px;border-bottom:1px solid #EEF1F7;display:flex;align-items:center;gap:9px;flex-shrink:0}
-.logo-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#B20710,#E50914);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800;box-shadow:0 3px 8px rgba(229,9,20,.3)}
-.logo-name{font-size:13px;font-weight:800;color:#1C2B4A;letter-spacing:.3px}
-.logo-sub{font-size:7px;color:#E50914;letter-spacing:2px;font-family:'JetBrains Mono',monospace}
-.pl-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;align-items:center}
-.pl-body::-webkit-scrollbar{width:3px}
-.pl-body::-webkit-scrollbar-thumb{background:#E0E6F0;border-radius:2px}
-.mascot-wrap{text-align:center;margin-bottom:12px;animation:float 3.5s ease-in-out infinite}
-.mascot-label{font-size:12px;font-weight:800;color:#1C2B4A;margin-top:6px;letter-spacing:.3px}
-.mascot-label span{color:#E50914}
-.mascot-tag{font-size:9px;color:#8FA3C0;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:2px}
-.pl-welcome{font-size:12px;color:#5A7090;line-height:1.65;text-align:center;padding:0 4px;margin-bottom:12px}
-.pl-hint{font-size:10px;color:#A0B4C8;font-family:'JetBrains Mono',monospace;text-align:center;line-height:1.5}
-.query-display{width:100%;background:#FFF5F0;border:1px solid #FFD0C0;border-radius:12px;padding:12px 14px;margin-bottom:12px;animation:fadeUp .4s ease}
-.query-display-lbl{font-size:9px;font-weight:700;color:#B20710;letter-spacing:2px;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
-.query-display-txt{font-size:12px;color:#3A1A08;line-height:1.6;font-weight:500}
-.status-box{width:100%;background:#F5F7FA;border:1px solid #DDE3EE;border-radius:10px;padding:10px 12px;animation:fadeUp .4s ease}
-.status-lbl{font-size:8px;font-weight:700;color:#8FA3C0;letter-spacing:2px;margin-bottom:5px;font-family:'JetBrains Mono',monospace}
-.status-stage{font-size:13px;font-weight:700;color:#1C2B4A}
-.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#E50914;margin-right:6px;animation:pulse 1.4s ease-in-out infinite}
-.pl-pts{width:100%;background:linear-gradient(135deg,#fff7ed,#fff);border:1px solid #fde68a;border-radius:10px;padding:9px 12px;margin-top:10px;display:flex;align-items:center;gap:8px}
-.pl-pts-icon{font-size:18px}
-.pl-pts-info .lbl{font-size:8px;font-weight:700;color:#92400e;letter-spacing:1.5px}
-.pl-pts-info .val{font-size:15px;font-weight:800;color:#d97706}
-.pl-footer{flex-shrink:0;padding:12px 14px;border-top:1px solid #EEF1F7;background:white}
-.input-row{display:flex;gap:8px;align-items:flex-end}
-.chat-input{flex:1;border:1.5px solid #C8D4E8;border-radius:12px;padding:10px 12px;font-size:13px;color:#1C2B4A;font-family:'Plus Jakarta Sans',sans-serif;background:white;outline:none;resize:none;line-height:1.5;max-height:90px;box-shadow:0 2px 6px rgba(28,43,74,.07);transition:border-color .2s}
-.chat-input:focus{border-color:#E50914}
-.chat-input:disabled{background:#F5F7FA;color:#A0B4C8;cursor:not-allowed}
-.send-btn{width:38px;height:38px;border-radius:10px;border:none;background:linear-gradient(135deg,#B20710,#E50914);color:#fff;cursor:pointer;flex-shrink:0;box-shadow:0 3px 8px rgba(229,9,20,.3);transition:transform .15s;display:flex;align-items:center;justify-content:center}
-.send-btn:active{transform:scale(.93)}
-.send-btn:disabled{opacity:.4;cursor:default}
+/* ── HEADER ── */
+.app-header{flex-shrink:0;background:linear-gradient(90deg,#B20710,#E50914);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(229,9,20,.3)}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.logo-icon{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800}
+.logo-name{font-size:16px;font-weight:800;color:#fff;letter-spacing:.3px}
+.logo-sub{font-size:8px;color:rgba(255,255,255,.7);letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-left:2px}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.hdr-user{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:5px 14px}
+.hdr-user-name{font-size:13px;font-weight:600;color:#fff}
+.hdr-pts{background:rgba(255,255,255,.9);color:#92400e;border-radius:12px;padding:2px 10px;font-size:11px;font-weight:800}
 
-/* ── RIGHT PANE ── */
-.pane-right{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#F0F4FA}
-.pr-stage-bar{flex-shrink:0;padding:10px 20px;border-bottom:1px solid #DDE3EE;background:rgba(240,244,250,.97);backdrop-filter:blur(12px);display:flex;align-items:center;gap:4px}
-.sp{font-size:8px;font-weight:600;letter-spacing:.5px;padding:3px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;color:#9AABC0;background:#E8EDF5;border:1px solid #DDE3EE;transition:all .5s;white-space:nowrap}
+/* ── STAGE BAR ── */
+.stage-bar{flex-shrink:0;padding:8px 20px;border-bottom:1px solid #DDE3EE;background:rgba(240,244,250,.97);backdrop-filter:blur(12px);display:flex;align-items:center;gap:4px}
+.stage-bar.hidden{display:none}
+.sp{font-size:8px;font-weight:600;letter-spacing:.5px;padding:3px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;color:#9AABC0;background:#E8EDF5;border:1px solid #DDE3EE;transition:all .5s;white-space:nowrap}
 .sp.active{color:#B20710;background:#FFF0E8;border-color:#FFB899}
 .sp.done{color:#00875A;background:#E6F7F1;border-color:#A8DECA}
-.ss{width:10px;height:1.5px;background:#DDE3EE;flex-shrink:0;transition:background .5s}
+.ss{width:14px;height:1.5px;background:#DDE3EE;flex-shrink:0;transition:background .5s}
 .ss.done{background:#00875A}
-.pr-feed{flex:1;overflow-y:auto;padding:20px 22px 40px}
-.pr-feed::-webkit-scrollbar{width:4px}
-.pr-feed::-webkit-scrollbar-thumb{background:#C8D4E8;border-radius:2px}
-.pr-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px 30px;color:#8FA3C0}
-.pr-welcome-icon{font-size:36px;margin-bottom:16px;opacity:.5}
-.pr-welcome-txt{font-size:14px;color:#8FA3C0;line-height:1.7;max-width:280px}
 
-/* ── CHAT MESSAGES ── */
-.msg{display:flex;gap:9px;margin-bottom:14px;animation:fadeUp .4s ease;max-width:640px}
+/* ── CHAT FEED ── */
+.chat-feed{flex:1;overflow-y:auto;padding:20px 24px 16px}
+.chat-feed::-webkit-scrollbar{width:4px}
+.chat-feed::-webkit-scrollbar-thumb{background:#C8D4E8;border-radius:2px}
+.feed-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px 30px;color:#8FA3C0}
+.feed-welcome-icon{font-size:40px;margin-bottom:14px;opacity:.45}
+.feed-welcome-txt{font-size:14px;color:#8FA3C0;line-height:1.7;max-width:300px}
+
+/* ── MESSAGES ── */
+.msg{display:flex;gap:9px;margin-bottom:14px;animation:fadeUp .35s ease;max-width:700px}
 .msg.user{flex-direction:row-reverse}
 .av{width:28px;height:28px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
 .av.ag{background:linear-gradient(135deg,#B20710,#E50914);color:#fff;box-shadow:0 2px 6px rgba(229,9,20,.25)}
-.av.ok{background:linear-gradient(135deg,#00875A,#006644);color:white;box-shadow:0 2px 6px rgba(0,135,90,.22)}
+.av.ok{background:linear-gradient(135deg,#00875A,#006644);color:white}
 .av.us{background:#1C2B4A;color:white}
-.bbl{padding:10px 14px;border-radius:14px;max-width:86%;font-size:13px;line-height:1.72}
+.bbl{padding:10px 14px;border-radius:14px;max-width:88%;font-size:13px;line-height:1.72}
 .bbl.ag{background:white;border:1px solid #DDE3EE;border-radius:3px 14px 14px 14px;color:#2C3E5A;box-shadow:0 2px 8px rgba(28,43,74,.06)}
-.bbl.us{background:linear-gradient(135deg,#B20710,#E50914);color:white;border-radius:14px 3px 14px 14px;font-size:13px;font-weight:500;box-shadow:0 2px 10px rgba(229,9,20,.25)}
+.bbl.us{background:linear-gradient(135deg,#B20710,#E50914);color:white;border-radius:14px 3px 14px 14px;font-weight:500;box-shadow:0 2px 10px rgba(229,9,20,.25)}
 .cur{animation:blink .7s step-end infinite;color:#E50914}
 .bbl.ag strong{color:#d97706}
 .bbl.ag ul,.bbl.ag ol{margin:4px 0 4px 18px}
 .bbl.ag li{margin:3px 0}
 .bbl.ag h2,.bbl.ag h3{color:#d97706;margin:6px 0 3px}
-
-/* section label */
 .sec{font-size:8px;font-weight:700;color:#8FA3C0;letter-spacing:2.5px;margin:14px 0 10px 2px;font-family:'JetBrains Mono',monospace;animation:fadeUp .4s ease}
 
-/* ── QUICK BUTTONS ── */
-.quick-btns{display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap}
+/* ── INPUT BAR ── */
+.input-bar{flex-shrink:0;background:white;border-top:1px solid #DDE3EE;padding:10px 20px 14px}
+.quick-btns{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap}
 .qb{background:white;border:1.5px solid #DDE3EE;color:#1C2B4A;border-radius:20px;padding:5px 13px;font-size:12px;cursor:pointer;transition:all .18s;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
 .qb:hover{background:#E50914;border-color:#E50914;color:white}
+.input-row{display:flex;gap:8px;align-items:flex-end}
+.chat-input{flex:1;border:1.5px solid #C8D4E8;border-radius:12px;padding:10px 14px;font-size:13px;color:#1C2B4A;font-family:'Plus Jakarta Sans',sans-serif;background:white;outline:none;resize:none;line-height:1.5;max-height:90px;box-shadow:0 2px 6px rgba(28,43,74,.07);transition:border-color .2s}
+.chat-input:focus{border-color:#E50914}
+.chat-input:disabled{background:#F5F7FA;color:#A0B4C8;cursor:not-allowed}
+.send-btn{width:40px;height:40px;border-radius:11px;border:none;background:linear-gradient(135deg,#B20710,#E50914);color:#fff;cursor:pointer;flex-shrink:0;box-shadow:0 3px 8px rgba(229,9,20,.3);transition:transform .15s;display:flex;align-items:center;justify-content:center}
+.send-btn:active{transform:scale(.93)}
+.send-btn:disabled{opacity:.4;cursor:default}
 
 /* ── CONFIRM BUTTON ── */
-.conf-btn{width:100%;max-width:640px;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135deg,#B20710,#E50914);box-shadow:0 4px 16px rgba(229,9,20,.28);margin-top:10px;margin-bottom:16px;animation:fadeUp .4s ease;transition:transform .15s}
+.conf-btn{width:100%;max-width:700px;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135deg,#B20710,#E50914);box-shadow:0 4px 16px rgba(229,9,20,.28);margin-top:10px;margin-bottom:16px;animation:fadeUp .4s ease;transition:transform .15s}
 .conf-btn:active{transform:scale(.98)}
 .conf-btn:disabled{opacity:.45;cursor:default}
 
 /* ── PAYMENT CARDS ── */
-.card3-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:8px;max-width:640px;animation:fadeUp .5s ease}
+.card3-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:8px;max-width:700px;animation:fadeUp .5s ease}
 .ccard{background:white;border-radius:13px;padding:14px;border:2px solid #DDE3EE;box-shadow:0 2px 8px rgba(28,43,74,.06);transition:all .4s;cursor:pointer;position:relative;overflow:visible;animation:fadeUp .4s ease both}
 .ccard.ncs{border-color:#d97706;background:linear-gradient(160deg,#fffdf5,white)}
 .ccard.sel{border-color:#B20710;box-shadow:0 5px 18px rgba(229,9,20,.18);transform:translateY(-3px)}
@@ -239,12 +222,12 @@ body{background:#F0F4FA;color:#1C2B4A;font-family:'Plus Jakarta Sans',sans-serif
 .otp-fl{font-size:9px;color:#8FA3C0;font-family:'JetBrains Mono',monospace}
 
 /* ── CHECKOUT ROWS ── */
-.crow{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:6px;border-radius:11px;background:white;border:1px solid #DDE3EE;box-shadow:0 1px 4px rgba(28,43,74,.05);transition:opacity .5s;max-width:640px}
+.crow{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:6px;border-radius:11px;background:white;border:1px solid #DDE3EE;box-shadow:0 1px 4px rgba(28,43,74,.05);transition:opacity .5s;max-width:700px}
 .cl{font-size:12px;color:#5A7090;font-family:'JetBrains Mono',monospace}
 .cv{font-size:12px;font-weight:700}
 
 /* ── SUMMARY ── */
-.summary{background:white;border-radius:16px;overflow:hidden;border:1.5px solid #A8DECA;box-shadow:0 6px 28px rgba(0,135,90,.1);animation:popIn .6s cubic-bezier(.34,1.4,.64,1);margin-top:4px;max-width:640px}
+.summary{background:white;border-radius:16px;overflow:hidden;border:1.5px solid #A8DECA;box-shadow:0 6px 28px rgba(0,135,90,.1);animation:popIn .6s cubic-bezier(.34,1.4,.64,1);margin-top:4px;max-width:700px}
 .sum-h{background:linear-gradient(135deg,#00875A,#006644);padding:18px 20px;display:flex;align-items:center;gap:11px}
 .sum-ck{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:18px}
 .sum-t{font-size:17px;font-weight:800;color:white}
@@ -259,138 +242,67 @@ body{background:#F0F4FA;color:#1C2B4A;font-family:'Plus Jakarta Sans',sans-serif
 
 .hidden{display:none}
 
-@media(max-width:700px){
-  .app{flex-direction:column}
-  .pane-left{width:100%;height:auto;flex-direction:row;align-items:center;gap:8px;padding:10px 14px;border-right:none;border-bottom:1px solid #DDE3EE}
-  .pl-header{border:none;padding:0;flex-shrink:0}
-  .pl-body{display:none}
-  .pl-footer{flex:1;padding:0;border:none}
-  .pane-right{flex:1;min-height:0;overflow:hidden}
+@media(max-width:600px){
   .card3-grid{grid-template-columns:1fr}
+  .app-header{padding:0 14px}
+  .chat-feed{padding:14px 14px 10px}
+  .input-bar{padding:8px 14px 12px}
 }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- LEFT PANE -->
-  <div class="pane-left">
-    <div class="pl-header">
-      <div class="logo-icon">CB</div>
+  <!-- HEADER -->
+  <div class="app-header">
+    <div class="hdr-left">
+      <div class="logo-icon">🎬</div>
       <div>
-        <div class="logo-name">CINEBOT</div>
-        <div class="logo-sub">COMMERCE AGENT</div>
+        <div class="logo-name">CineBot</div>
       </div>
+      <div class="logo-sub">COMMERCE AGENT</div>
     </div>
-
-    <div class="pl-body" id="plBody">
-      <div class="mascot-wrap">
-        <!-- CineBot mascot SVG: cinema-themed character -->
-        <svg width="76" height="108" viewBox="0 0 90 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="45" cy="124" rx="22" ry="4" fill="#1C2B4A" opacity="0.12"/>
-          <!-- Legs -->
-          <ellipse cx="33" cy="116" rx="11" ry="5" fill="#0d1e45"/>
-          <ellipse cx="57" cy="116" rx="11" ry="5" fill="#0d1e45"/>
-          <!-- Body -->
-          <path d="M18 70 Q14 80 12 110 L78 110 Q76 80 72 70 Q60 62 45 62 Q30 62 18 70Z" fill="#1C2B4A"/>
-          <!-- Shirt detail / film strip on chest -->
-          <rect x="33" y="72" width="24" height="16" rx="3" fill="#E50914" opacity="0.85"/>
-          <rect x="33" y="72" width="4" height="16" rx="1" fill="#fff" opacity="0.35"/>
-          <rect x="53" y="72" width="4" height="16" rx="1" fill="#fff" opacity="0.35"/>
-          <rect x="38" y="75" width="14" height="3" rx="1" fill="#fff" opacity="0.5"/>
-          <rect x="38" y="81" width="14" height="3" rx="1" fill="#fff" opacity="0.5"/>
-          <!-- Arms -->
-          <path d="M18 70 Q8 80 10 100 Q14 102 18 100 Q20 82 24 74Z" fill="#1C2B4A"/>
-          <ellipse cx="13" cy="102" rx="5" ry="6" fill="#C8956A" transform="rotate(-10 13 102)"/>
-          <path d="M72 70 Q82 78 80 98 Q76 100 72 98 Q70 80 66 74Z" fill="#1C2B4A"/>
-          <ellipse cx="77" cy="100" rx="5" ry="6" fill="#C8956A" transform="rotate(10 77 100)"/>
-          <!-- Neck -->
-          <rect x="40" y="54" width="10" height="12" rx="5" fill="#C8956A"/>
-          <!-- Head -->
-          <ellipse cx="45" cy="38" rx="18" ry="20" fill="#C8956A"/>
-          <!-- Hair -->
-          <path d="M27 32 Q28 16 45 14 Q62 16 63 32 Q58 22 45 20 Q32 22 27 32Z" fill="#1A1008"/>
-          <path d="M27 32 Q24 28 26 38 Q28 34 30 32Z" fill="#1A1008"/>
-          <path d="M63 32 Q66 28 64 38 Q62 34 60 32Z" fill="#1A1008"/>
-          <!-- Chin -->
-          <path d="M31 46 Q33 58 45 60 Q57 58 59 46 Q54 54 45 55 Q36 54 31 46Z" fill="#1A1008" opacity="0.85"/>
-          <!-- Mouth -->
-          <path d="M38 44 Q42 47 45 46 Q48 47 52 44" stroke="#1A1008" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.9"/>
-          <!-- Eyes whites -->
-          <ellipse cx="38" cy="36" rx="4" ry="3.5" fill="white"/>
-          <ellipse cx="52" cy="36" rx="4" ry="3.5" fill="white"/>
-          <!-- Pupils -->
-          <ellipse cx="39" cy="36" rx="2.2" ry="2.2" fill="#1A1008"/>
-          <ellipse cx="53" cy="36" rx="2.2" ry="2.2" fill="#1A1008"/>
-          <!-- Eye shine -->
-          <circle cx="40" cy="35" r="0.7" fill="white"/>
-          <circle cx="54" cy="35" r="0.7" fill="white"/>
-          <!-- Eyebrows -->
-          <path d="M34 31 Q38 29 42 31" stroke="#1A1008" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-          <path d="M48 31 Q52 29 56 31" stroke="#1A1008" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-          <!-- Earring / popcorn bucket icon -->
-          <circle cx="27" cy="38" r="2" fill="#E50914" opacity="0.85"/>
-        </svg>
-        <div class="mascot-label">CINEBOT<br><span>Commerce Agent</span></div>
-        <div class="mascot-tag">Expert. Undercover. Best Deal.</div>
-      </div>
-
-      <div id="plWelcome">
-        <p class="pl-welcome">Tell me what movie you want to watch and when. I'll find the best seats, apply your loyalty points, and handle payment end to end.</p>
-        <p class="pl-hint">&#8595; Type your request below and tap send</p>
-      </div>
-
-      <div id="plQuery" class="hidden">
-        <div class="query-display">
-          <div class="query-display-lbl">YOUR REQUEST</div>
-          <div class="query-display-txt" id="queryTxt"></div>
-        </div>
-        <div class="status-box">
-          <div class="status-lbl">MISSION STATUS</div>
-          <div class="status-stage" id="statusStage"><span class="status-dot"></span>In progress...</div>
-        </div>
-      </div>
-
-      <div class="pl-pts">
-        <div class="pl-pts-icon">⭐</div>
-        <div class="pl-pts-info">
-          <div class="lbl">LOYALTY POINTS</div>
-          <div class="val" id="ptsDisplay">1000 pts</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pl-footer">
-      <div class="quick-btns">
-        <button class="qb" onclick="hint('I want to book 2 tickets for Dhurandhar this Sunday afternoon')">🎥 Book Movie</button>
-        <button class="qb" onclick="hint('What Hindi movies are playing this week?')">🎬 Now Playing</button>
-        <button class="qb" onclick="hint('Show my past bookings')">📋 My Bookings</button>
-      </div>
-      <div class="input-row">
-        <textarea class="chat-input" id="inp" rows="2" placeholder="e.g. Book 2 tickets for Dhurandhar this Sunday afternoon…" oninput="resizeInp(this)" onkeydown="onKey(event)"></textarea>
-        <button class="send-btn" id="sendBtn" onclick="send()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+    <div class="hdr-right">
+      <div class="hdr-user">
+        <span style="font-size:14px">👤</span>
+        <span class="hdr-user-name">Welcome, Ram!</span>
+        <span class="hdr-pts" id="ptsDisplay">⭐ 1000 pts</span>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT PANE -->
-  <div class="pane-right">
-    <div class="pr-stage-bar hidden" id="stages">
-      <div class="sp" id="s1">SEARCH</div><div class="ss" id="sep1"></div>
-      <div class="sp" id="s2">CONFIRM</div><div class="ss" id="sep2"></div>
-      <div class="sp" id="s3">PAYMENT</div><div class="ss" id="sep3"></div>
-      <div class="sp" id="s4">VERIFY</div><div class="ss" id="sep4"></div>
-      <div class="sp" id="s5">DONE</div>
-    </div>
-    <div class="pr-feed" id="feed">
-      <div class="pr-welcome" id="prWelcome">
-        <div class="pr-welcome-icon">🎬</div>
-        <div class="pr-welcome-txt">Your agentic booking flow will appear here. Type your request on the left to begin.</div>
-      </div>
+  <!-- STAGE BAR -->
+  <div class="stage-bar hidden" id="stages">
+    <div class="sp" id="s1">SEARCH</div><div class="ss" id="sep1"></div>
+    <div class="sp" id="s2">CONFIRM</div><div class="ss" id="sep2"></div>
+    <div class="sp" id="s3">PAYMENT</div><div class="ss" id="sep3"></div>
+    <div class="sp" id="s4">VERIFY</div><div class="ss" id="sep4"></div>
+    <div class="sp" id="s5">DONE</div>
+  </div>
+
+  <!-- CHAT FEED -->
+  <div class="chat-feed" id="feed">
+    <div class="feed-welcome" id="feedWelcome">
+      <div class="feed-welcome-icon">🎬</div>
+      <div class="feed-welcome-txt">Hi Ram! Tell me what movie you'd like to watch and when. I'll find the best seats, apply your loyalty points, and handle payment end to end.</div>
     </div>
   </div>
+
+  <!-- INPUT BAR -->
+  <div class="input-bar">
+    <div class="quick-btns">
+      <button class="qb" onclick="quickSend('I want to book 2 tickets for Dhurandhar this Sunday afternoon')">🎥 Book Movie</button>
+      <button class="qb" onclick="quickSend('What Hindi movies are playing this week?')">🎬 Now Playing</button>
+      <button class="qb" onclick="quickSend('Show my past bookings')">📋 My Bookings</button>
+    </div>
+    <div class="input-row">
+      <textarea class="chat-input" id="inp" rows="2" placeholder="e.g. Book 2 tickets for Dhurandhar this Sunday afternoon…" oninput="resizeInp(this)" onkeydown="onKey(event)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="send()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -414,6 +326,7 @@ function resizeInp(el){el.style.height='auto';el.style.height=Math.min(el.scroll
 function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
 function goBottom(){setTimeout(function(){feed.scrollTop=feed.scrollHeight;},80);}
 function hint(t){inp.value=t;resizeInp(inp);inp.focus();}
+function quickSend(t){inp.value=t;resizeInp(inp);send();}
 function lock(){inp.disabled=true;sBtn.disabled=true;}
 function unlock(){inp.disabled=false;sBtn.disabled=false;}
 function esc(t){var d=document.createElement('div');d.appendChild(document.createTextNode(t));return d.innerHTML;}
@@ -426,9 +339,8 @@ function setStage(n){
 }
 
 function showPostSend(txt){
-  document.getElementById('plWelcome').classList.add('hidden');
-  document.getElementById('plQuery').classList.remove('hidden');
-  document.getElementById('queryTxt').textContent=txt;
+  var fw=document.getElementById('feedWelcome');
+  if(fw)fw.style.display='none';
 }
 
 function userBubble(txt){
@@ -463,7 +375,7 @@ async function send(){
   var txt=inp.value.trim();if(!txt)return;
   ensureAudio();
   lock();
-  document.getElementById('prWelcome').style.display='none';
+  var fw=document.getElementById('feedWelcome');if(fw)fw.style.display='none';
   document.getElementById('stages').classList.remove('hidden');
   showPostSend(txt);
   userBubble(txt);
@@ -643,7 +555,7 @@ async function confirmPayment(){
   userBubble('Use '+_selectedCardOption.label);
   await wait(400);
   setStage(4);
-  await runOTPVerification();
+  await executePaymentAndSummary();
 }
 
 /* ── OTP ── */
@@ -702,7 +614,7 @@ async function verifyOTP(){
 /* ── PAYMENT EXECUTION + SUMMARY ── */
 async function executePaymentAndSummary(){
   setStage(5);
-  await agentMsg('Payment authenticated. Confirming your booking…',false,false);
+  await agentMsg('Processing your payment. Confirming your booking…',false,false);
   await wait(1200);
 
   // Hit the pay API
@@ -800,3 +712,4 @@ if __name__ == "__main__":
     # Use Flask dev server only for local runs.
     # On CodeSandbox/Codespaces, gunicorn is used via tasks.json.
     app.run(host="0.0.0.0", port=PORT, debug=False)
+ 
