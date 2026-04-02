@@ -173,6 +173,12 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 
 /* constraint tag */
 .tag{background:rgba(229,9,20,.15);border:1px solid rgba(229,9,20,.3);color:#f87171;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
+
+/* ── Floating action button ─────────────────────────── */
+.fab{position:fixed;bottom:90px;right:24px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(229,9,20,.45);cursor:pointer;border:none;transition:transform .2s,box-shadow .2s;z-index:999}
+.fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(229,9,20,.6)}
+.fab-tooltip{position:fixed;bottom:148px;right:20px;background:#1a1a1a;color:#fff;font-size:12px;padding:6px 12px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:998}
+.fab-tooltip.show{opacity:1}
 </style>
 </head>
 <body>
@@ -202,7 +208,7 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 <!-- Input -->
 <div class="input-bar">
   <div class="quick-btns">
-    <button class="qb" onclick="hint('I want to book 2 tickets for Dhurandhar this Sunday afternoon')">🎥 Book Dhurandhar</button>
+    <button class="qb" onclick="hint('I want to book 2 tickets for Dhurandhar this Sunday afternoon')">🎥 Book Movies</button>
     <button class="qb" onclick="hint('Show me all Hindi movies available this week')">🎬 What\'s Playing</button>
     <button class="qb" onclick="hint('Show my past bookings')">📋 My Bookings</button>
     <button class="qb" onclick="hint('What Hindi movies are releasing in action genre?')">⭐ Action Movies</button>
@@ -311,7 +317,22 @@ function esc(t){const d=document.createElement('div');d.appendChild(document.cre
 document.getElementById('inp').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}
 });
+
+// Floating button tooltip
+const fab=document.getElementById('fab');
+const fabTip=document.getElementById('fabTip');
+fab.addEventListener('mouseenter',()=>fabTip.classList.add('show'));
+fab.addEventListener('mouseleave',()=>fabTip.classList.remove('show'));
+fab.addEventListener('click',()=>{
+  document.getElementById('inp').focus();
+  document.getElementById('chatArea').scrollTop=document.getElementById('chatArea').scrollHeight;
+});
 </script>
+
+<!-- Floating action button -->
+<button class="fab" id="fab" title="New message">🎬</button>
+<div class="fab-tooltip" id="fabTip">Start booking</div>
+
 </body>
 </html>"""
 
@@ -341,24 +362,3 @@ def chat():
         return jsonify({"error": str(exc)}), 500
 
 
-# ---------------------------------------------------------------------------
-# Start-up
-# ---------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    try:
-        from agent.config import USE_BEDROCK, BEDROCK_MODEL_ID, ANTHROPIC_MODEL
-        provider = f"AWS Bedrock ({BEDROCK_MODEL_ID})" if USE_BEDROCK else f"Anthropic API ({ANTHROPIC_MODEL})"
-    except Exception:
-        provider = "(config not yet loaded — check Secrets/env vars)"
-
-    print("=" * 60)
-    print("  🎬  CineBot – Agentic Movie Booking")
-    print(f"  AI Provider : {provider}")
-    print(f"  Serving     : http://0.0.0.0:{PORT}")
-    print(f"  API docs    : http://0.0.0.0:{PORT}/api/health")
-    print("=" * 60)
-
-    # Use Flask dev server only for local runs.
-    # On CodeSandbox/Codespaces, gunicorn is used via tasks.json.
-    app.run(host="0.0.0.0", port=PORT, debug=False)
