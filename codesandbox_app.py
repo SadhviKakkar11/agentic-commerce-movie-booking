@@ -174,6 +174,17 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 /* constraint tag */
 .tag{background:rgba(229,9,20,.15);border:1px solid rgba(229,9,20,.3);color:#f87171;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
 
+/* ── Stage bar ──────────────────────────────────────── */
+.stage-bar{background:var(--surface);border-bottom:1px solid var(--surface3);padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:0;flex-shrink:0}
+.stage{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--muted);transition:color .3s}
+.stage.active{color:var(--red)}
+.stage.done{color:#16a34a}
+.stage .dot-s{width:24px;height:24px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .3s;background:transparent}
+.stage.active .dot-s{background:var(--red);border-color:var(--red);color:#fff}
+.stage.done .dot-s{background:#16a34a;border-color:#16a34a;color:#fff}
+.stage-line{width:40px;height:2px;background:var(--surface3);margin:0 6px;border-radius:2px;transition:background .3s}
+.stage-line.done{background:#16a34a}
+
 /* ── Payment overlay ────────────────────────────────── */
 .pay-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(3px)}
 .pay-overlay.open{display:flex}
