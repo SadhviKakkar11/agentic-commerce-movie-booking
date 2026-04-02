@@ -163,7 +163,7 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 .input-bar{background:var(--surface);border-top:1px solid var(--surface3);padding:14px 20px;flex-shrink:0}
 .quick-btns{display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap}
 .qb{background:var(--surface2);border:1px solid var(--surface3);color:var(--text);border-radius:20px;padding:5px 13px;font-size:12px;cursor:pointer;transition:all .18s;white-space:nowrap}
-.qb:hover{background:var(--red);border-color:var(--red)}
+.qb:hover{background:var(--red);border-color:var(--red);color:#fff}
 .row{display:flex;gap:10px;align-items:center}
 .row input{flex:1;background:var(--surface2);border:1px solid var(--surface3);border-radius:25px;padding:11px 18px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
 .row input:focus{border-color:var(--red)}
