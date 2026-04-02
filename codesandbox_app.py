@@ -278,9 +278,9 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@4/marked.min.js"></script>
 <script>
-marked.use({breaks:true, gfm:true});
+marked.setOptions({breaks:true, gfm:true});
 
 const USER_ID = 'user_ram_001';
 const chat    = document.getElementById('chatArea');
