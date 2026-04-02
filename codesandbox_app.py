@@ -1,4 +1,4 @@
-"""
+﻿"""
 CodeSandbox combined entry point.
 Runs the backend API and the chat web UI on a single Flask server (port 3000).
 
