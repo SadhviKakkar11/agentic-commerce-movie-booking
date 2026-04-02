@@ -321,6 +321,7 @@ function send(){
   if(!msg)return;
 
   const btn=document.getElementById('sendBtn');
+  if(btn.disabled)return;
   btn.disabled=true;
   addMsg(msg,'user',false);
   inp.value='';
@@ -386,12 +387,14 @@ function maybeShowActions(bubble, text){
     var btn=document.createElement('button');
     btn.className='ab '+item[0];
     btn.textContent=item[1];
-    btn.onclick=(function(msg, autoSend){
+    btn.onclick=(function(msg, autoSend, container){
       return function(){
+        // Disable all action buttons immediately to prevent double-sends
+        container.querySelectorAll('button').forEach(function(b){b.disabled=true;b.style.opacity='0.5';b.style.cursor='default';});
         hint(msg);
         if(autoSend) send();
       };
-    })(item[2], item[3]);
+    })(item[2], item[3], d);
     d.appendChild(btn);
   });
   bubble.appendChild(d);
