@@ -305,6 +305,7 @@ marked.parse = marked;
 
 const USER_ID = 'user_ram_001';
 const chat    = document.getElementById('chatArea');
+let _lastBotText = '';
 
 // hint: fill input and focus (let user edit or press Enter/send)
 function hint(t){
@@ -366,7 +367,7 @@ function addMsg(text, who, md){
   const b=document.createElement('div');
   b.className='bubble';
   b.innerHTML = md ? marked.parse(text) : esc(text);
-  if(who==='bot') maybeShowActions(b, text);
+  if(who==='bot'){ _lastBotText = text; maybeShowActions(b, text); }
 
   wrap.appendChild(av);
   wrap.appendChild(b);
@@ -380,23 +381,29 @@ function maybeShowActions(bubble, text){
   const d=document.createElement('div');
   d.className='action-btns';
   [
-    ['ab-yes','Yes, Book It!','Yes, go ahead and book it', true, false],
-    ['ab-seat','Change Seats','Change the seats, suggest different seats based on my preferences', true, false],
-    ['ab-theatre','Change Theatre','Change the theatre, suggest another theatre based on my preferences', true, false]
+    ['ab-yes','Yes, Book It!', null, false],
+    ['ab-seat','Change Seats','Change the seats, suggest different seats based on my preferences', true],
+    ['ab-theatre','Change Theatre','Change the theatre, suggest another theatre based on my preferences', true]
   ].forEach(function(item){
     var btn=document.createElement('button');
     btn.className='ab '+item[0];
     btn.textContent=item[1];
-    btn.onclick=(function(msg, autoSend, showConfirm, container){
+    btn.onclick=(function(cls, msg, autoSend, container){
       return function(){
-        // Disable all action buttons immediately to prevent double-sends
         container.querySelectorAll('button').forEach(function(b){b.disabled=true;b.style.opacity='0.5';b.style.cursor='default';});
-        // For "Yes Book It" show confirmed card right away (don't wait for bot)
-        if(showConfirm) confirmPayment('Booking confirmed', '');
-        hint(msg);
-        if(autoSend) send();
+        if(cls==='ab-yes'){
+          // Show payment options from the last bot message directly - no agent call
+          const opts=parseOptions(_lastBotText);
+          if(opts.length){ maybeShowPayment(_lastBotText); return; }
+          // Fallback: ask agent for payment options (faster than full booking)
+          hint('What are the payment options for this booking?');
+          send();
+        } else {
+          hint(msg);
+          if(autoSend) send();
+        }
       };
-    })(item[2], item[3], item[4], d);
+    })(item[0], item[2], item[3], d);
     d.appendChild(btn);
   });
   bubble.appendChild(d);
