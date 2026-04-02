@@ -214,6 +214,13 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 .confirmed-card .info-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:12px}
 .confirmed-card .info-row:last-child{border:none}
 .confirmed-card .info-row span:first-child{color:rgba(255,255,255,.65)}
+
+/* ── Booking action buttons ─────────────────────────── */
+.action-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--surface3)}
+.ab{border:none;border-radius:12px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
+.ab-yes{background:#16a34a;color:#fff}.ab-yes:hover{background:#15803d}
+.ab-seat{background:var(--surface2);border:1px solid var(--surface3);color:var(--text)}.ab-seat:hover{background:#2563eb;border-color:#2563eb;color:#fff}
+.ab-theatre{background:var(--surface2);border:1px solid var(--surface3);color:var(--text)}.ab-theatre:hover{background:#7c3aed;border-color:#7c3aed;color:#fff}
 </style>
 </head>
 <body>
@@ -356,11 +363,31 @@ function addMsg(text, who, md){
   const b=document.createElement('div');
   b.className='bubble';
   b.innerHTML = md ? marked.parse(text) : esc(text);
+  if(who==='bot') maybeShowActions(b, text);
 
   wrap.appendChild(av);
   wrap.appendChild(b);
   chat.appendChild(wrap);
   chat.scrollTop=chat.scrollHeight;
+}
+
+// ── Booking action buttons after recommendation ─────
+function maybeShowActions(bubble, text){
+  if(!/shall i|should i|go ahead|reserve these|confirm.*seat|want me to book/i.test(text.toLowerCase())) return;
+  const d=document.createElement('div');
+  d.className='action-btns';
+  [
+    ['ab-yes','\u2705 Yes, Book It!','Yes, go ahead and book it'],
+    ['ab-seat','\ud83d\udcba Change Seats','Change the seats, suggest different seats based on my preferences'],
+    ['ab-theatre','\ud83c\udfdb\ufe0f Change Theatre','Change the theatre, suggest another theatre based on my preferences']
+  ].forEach(function(item){
+    var btn=document.createElement('button');
+    btn.className='ab '+item[0];
+    btn.textContent=item[1];
+    btn.onclick=(function(msg){return function(){hint(msg);};})(item[2]);
+    d.appendChild(btn);
+  });
+  bubble.appendChild(d);
 }
 
 function addTyping(){
