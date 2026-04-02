@@ -755,8 +755,7 @@ async function executePaymentAndSummary(){
 </body>
 </html>"""
 
-/* ── Header ─────────────────────────────────────────── */
-.header{background:linear-gradient(90deg,var(--red),var(--red2));padding:12px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.6);flex-shrink:0}
+_REMOVED_OLD_CSS_PLACEHOLDER = True
 .logo{font-size:20px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:8px;color:#fff}
 .logo span{font-size:11px;font-weight:400;color:#fff;opacity:.9;margin-left:4px}
 .user-pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:13px}
