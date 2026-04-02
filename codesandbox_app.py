@@ -173,39 +173,6 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 
 /* constraint tag */
 .tag{background:rgba(229,9,20,.15);border:1px solid rgba(229,9,20,.3);color:#f87171;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
-
-/* ── CSS Agent Character ─────────────────────────────── */
-.agent-wrap{position:fixed;bottom:24px;right:28px;display:flex;flex-direction:column;align-items:center;cursor:pointer;z-index:999;transition:transform .25s;user-select:none}
-.agent-wrap:hover{transform:translateY(-6px)}
-.agent-label{text-align:center;margin-top:6px}
-.agent-label .name{font-size:11px;font-weight:800;color:#1a1a1a;letter-spacing:.4px;text-transform:uppercase}
-.agent-label .role{font-size:10px;font-weight:700;color:var(--red);letter-spacing:.3px}
-.agent-label .tagline{font-size:9px;color:#888;font-style:italic}
-/* head */
-.ag-head{width:38px;height:38px;background:#c68642;border-radius:50%;position:relative;margin:0 auto}
-.ag-head::before{content:"";position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:20px;height:10px;background:#c68642;border-radius:0 0 50% 50%}
-/* hair */
-.ag-head::after{content:"";position:absolute;top:1px;left:4px;right:4px;height:14px;background:#2c1a0e;border-radius:50% 50% 30% 30%;}
-/* eyes */
-.ag-eyes{position:absolute;top:17px;left:0;right:0;display:flex;justify-content:center;gap:8px}
-.ag-eye{width:5px;height:5px;background:#1a1a1a;border-radius:50%}
-/* body */
-.ag-body{width:52px;height:46px;background:#1e3a5f;border-radius:8px 8px 4px 4px;position:relative;margin-top:2px}
-/* collar/shirt */
-.ag-body::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:14px;height:10px;background:#f0f0f0;border-radius:0 0 6px 6px}
-/* badge */
-.ag-body::after{content:"";position:absolute;top:14px;left:8px;width:12px;height:9px;background:#e0a800;border-radius:2px}
-/* arms */
-.ag-arms{display:flex;justify-content:space-between;width:68px;margin-top:-40px;position:relative;z-index:-1}
-.ag-arm{width:10px;height:36px;background:#1e3a5f;border-radius:5px}
-.ag-arm.left{border-radius:5px 2px 5px 5px;transform:rotate(6deg)}
-.ag-arm.right{border-radius:2px 5px 5px 5px;transform:rotate(-6deg)}
-/* hands */
-.ag-hand{width:10px;height:10px;background:#c68642;border-radius:50%;margin-top:2px}
-/* legs */
-.ag-legs{display:flex;gap:6px;margin-top:2px}
-.ag-leg{width:16px;height:22px;background:#1e3a5f;border-radius:4px}
-.ag-shoe{width:18px;height:8px;background:#1a1a1a;border-radius:4px;margin-top:1px;margin-left:-1px}
 </style>
 </head>
 <body>
@@ -344,44 +311,7 @@ function esc(t){const d=document.createElement('div');d.appendChild(document.cre
 document.getElementById('inp').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}
 });
-
-// Agent character click — focus input
-document.getElementById('agentChar').addEventListener('click',()=>{
-  document.getElementById('inp').focus();
-  document.getElementById('chatArea').scrollTop=document.getElementById('chatArea').scrollHeight;
-});
 </script>
-
-<!-- CSS Agent Character -->
-<div class="agent-wrap" id="agentChar" title="Click to start booking">
-  <div class="ag-head">
-    <div class="ag-eyes"><div class="ag-eye"></div><div class="ag-eye"></div></div>
-  </div>
-  <div style="display:flex;align-items:flex-start;gap:0">
-    <div style="display:flex;flex-direction:column;align-items:center">
-      <div class="ag-arms" style="display:flex;justify-content:space-between;width:68px;position:relative">
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div class="ag-arm left"></div>
-          <div class="ag-hand"></div>
-        </div>
-        <div class="ag-body"></div>
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div class="ag-arm right"></div>
-          <div class="ag-hand"></div>
-        </div>
-      </div>
-      <div class="ag-legs">
-        <div style="display:flex;flex-direction:column;align-items:center"><div class="ag-leg"></div><div class="ag-shoe"></div></div>
-        <div style="display:flex;flex-direction:column;align-items:center"><div class="ag-leg"></div><div class="ag-shoe"></div></div>
-      </div>
-    </div>
-  </div>
-  <div class="agent-label">
-    <div class="name">CineBot!</div>
-    <div class="role">Commerce Agent</div>
-    <div class="tagline">Expert. Undercover. Best Deal.</div>
-  </div>
-</div>
 
 </body>
 </html>"""
