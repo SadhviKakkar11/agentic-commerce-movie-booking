@@ -291,8 +291,8 @@ function marked(s){
     .replace(/^#{1}\s+(.+)$/gm,'<h1>$1</h1>')
     .replace(/^[-*]\s+(.+)$/gm,'<li>$1</li>')
     .replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>')
-    .replace(/\n\n+/g,'</p><p>')
-    .replace(/\n/g,'<br>');
+    .replace(/\\n\\n+/g,'</p><p>')
+    .replace(/\\n/g,'<br>');
 }
 marked.parse = marked;
 
