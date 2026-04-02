@@ -425,7 +425,7 @@ let _pendingBooking = {};
 
 function parseOptions(text){
   // Each option block: "Option N — Title" followed by bullet lines
-  const optRe = /Option\s*(\d+)\s*[—–-]+\s*([^\n]+)/gi;
+  const optRe = /Option\s*(\d+)\s*[—–-]+\s*([^\\n]+)/gi;
   const opts = [];
   let m;
   while((m = optRe.exec(text)) !== null){
@@ -436,7 +436,7 @@ function parseOptions(text){
     const block = nextM ? text.slice(start, nextM.index) : text.slice(start);
     if(nextM) optRe.lastIndex = nextM.index;
 
-    const bullets = [...block.matchAll(/[•*-]\s*([^\n]+)/g)].map(b=>b[1].trim());
+    const bullets = [...block.matchAll(/[•*-]\s*([^\\n]+)/g)].map(b=>b[1].trim());
 
     const payM = block.match(/you pay[:\s]+(?:Rs\.?\s*|₹\s*)([\d,]+(?:\.\d+)?)/i)
                  || block.match(/(?:Rs\.?\s*|₹\s*)([\d,]+(?:\.\d+)?)/i);
