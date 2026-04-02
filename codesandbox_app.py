@@ -485,8 +485,8 @@ function parseOptions(text){
 
 function maybeShowPayment(text){
   const tl = text.toLowerCase();
-  if(/\bconfirmed\b|\bpaid\b|payment success|booking confirmed/i.test(tl)) { setStage(3); return; }
-  else if(/\bshow\b|seat|theatre|available/i.test(tl)) setStage(1);
+  if(/confirmed|paid|payment success|booking confirmed/i.test(tl)) { setStage(3); return; }
+  else if(/show|seat|theatre|available/i.test(tl)) setStage(1);
 
   const opts = parseOptions(text);
   if(!opts.length) return;
