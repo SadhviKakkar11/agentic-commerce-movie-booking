@@ -488,17 +488,17 @@ function buildFallbackOptions(text){
   const rateM = text.match(/1\s*pt\s*=\s*Rs\.?\s*([\d.]+)/i);
   const opts = [];
 
-  // Option 1 — ICICI Credit Card (base price)
-  opts.push({num:'1',title:'ICICI Credit Card',
+  // Option 1 — Axis Atlas Credit Card (base price, user does NOT own this)
+  opts.push({num:'1',title:'Axis Atlas Credit Card',
     bullets:['Type: Credit Card','Cashback: 5% on entertainment'],
-    amt:base, ownThis:true, preferred:false});
+    amt:base, ownThis:false, preferred:false});
 
   if(rateM){
     const rate   = parseFloat(rateM[1]);
     const pts    = 1000; // user's loyalty points
     const disc   = Math.min(Math.round(pts * rate), base - 1);
     const after  = base - disc;
-    opts.push({num:'2',title:'Loyalty Points + ICICI Card',
+    opts.push({num:'2',title:'Loyalty Points + ICICI Platinum Chip Credit Card',
       bullets:['Points redeemed: '+pts+' pts','Discount: Rs. '+disc,'Remaining: Credit card'],
       amt:after, ownThis:true, preferred:true});
   }
@@ -523,7 +523,7 @@ function showPaymentPanel(opts){
     card.className = 'opt-card' + (isBest ? ' best' : '');
     let inner = isBest ? '<span class="opt-badge">BEST DEAL</span>' : '';
     if(opt.preferred && !isBest) inner += '<span class="pref-badge">PREFERRED</span>';
-    else if(opt.ownThis && !isBest && !opt.preferred) inner += '<span class="own-badge">YOU OWN THIS</span>';
+    if(opt.ownThis) inner += '<span class="own-badge">YOU OWN THIS</span>';
     inner += `<div class="opt-name">${esc(opt.title)}</div>`;
     opt.bullets.forEach(bl=>{
       const parts = bl.split(':');
