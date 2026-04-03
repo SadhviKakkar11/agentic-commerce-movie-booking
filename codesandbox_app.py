@@ -346,6 +346,32 @@ function send(){
 
   const tid=addTyping();
 
+  // Intercept booking history queries — show local history (no agent call)
+  if(/my bookings|past bookings|booking history|show.*booking/i.test(msg)){
+    rmTyping(tid);
+    btn.disabled=false;
+    if(_bookingHistory.length===0){
+      addMsg('You have no bookings in this session yet. Book a movie and your history will appear here!','bot',false);
+    } else {
+      let html='<strong>Your Bookings</strong><br><br>';
+      _bookingHistory.forEach(function(bk,i){
+        html+='<div style="background:#f7f7f8;border:1px solid #e2e2e6;border-radius:10px;padding:10px 12px;margin:6px 0;font-size:12px">';
+        html+='<div style="font-weight:700;font-size:13px;margin-bottom:4px">'+esc(bk.movie)+'</div>';
+        html+='<div style="color:#6b6b6b">'+esc(bk.datetime)+'</div>';
+        html+='<div>'+esc(bk.theatre)+'</div>';
+        html+='<div>Seats: '+esc(bk.seats)+'</div>';
+        html+='<div style="margin-top:4px;color:#16a34a;font-weight:600">'+esc(bk.amt)+' &nbsp;·&nbsp; #'+esc(bk.id)+'</div>';
+        html+='</div>';
+      });
+      const wrap=document.createElement('div'); wrap.className='msg bot';
+      const av=document.createElement('div'); av.className='avatar bot'; av.textContent='🤖';
+      const b=document.createElement('div'); b.className='bubble'; b.innerHTML=html;
+      wrap.appendChild(av); wrap.appendChild(b); chat.appendChild(wrap);
+      chat.scrollTop=chat.scrollHeight;
+    }
+    return;
+  }
+
   fetch('/chat',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -489,19 +515,22 @@ function playChime(){
 
 // ── Payment flow ─────────────────────────────────────
 let _pendingBooking = {};
+let _bookingHistory = [];
 
 function extractBookingDetails(text){
   const d = {};
+  const clean = text.replace(/\*\*/g,'').replace(/\*/g,'');
   const movieM = text.match(/\*\*([^*]+)\*\*/) || text.match(/for\s+([A-Z][A-Za-z0-9 ]+?)(?= this| on | at )/);
-  if(movieM) d.movie = movieM[1].trim();
-  const dtM = text.match(/Date[^:]*:\s*(.+)/i);
+  if(movieM) d.movie = movieM[1].trim().replace(/[:\s]+$/,'');
+  const dtM = clean.match(/Date[^:]*:\s*(.+)/i);
   if(dtM) d.datetime = dtM[1].trim();
-  const thM = text.match(/Theatre[^:]*:\s*(.+)/i);
+  const thM = clean.match(/Theatre[^:]*:\s*(.+)/i) || clean.match(/Theater[^:]*:\s*(.+)/i) || clean.match(/Venue[^:]*:\s*(.+)/i) || clean.match(/Cinema[^:]*:\s*(.+)/i);
   if(thM) d.theatre = thM[1].trim();
-  const stM = text.match(/Seats?[^:]*:\s*(.+)/i);
+  const stM = clean.match(/Seats?[^:]*:\s*(.+)/i);
   if(stM) d.seats = stM[1].trim();
-  const catM = text.match(/Premium|Gold|Silver|Platinum|Standard|Classic/i);
-  if(catM) d.category = catM[0];
+  const catM = clean.match(/(?:Category|Class)[^:]*:\s*(\S+)/i);
+  if(catM) d.category = catM[1].trim();
+  if(!d.category){ const kw=clean.match(/Premium|Gold|Silver|Platinum|Standard|Classic/i); if(kw) d.category=kw[0]; }
   return d;
 }
 
@@ -635,6 +664,7 @@ function confirmPayment(optName, amt){
   const amtTxt = amt || _pendingBooking.amount || '';
   const det = extractBookingDetails(_lastBotText);
   const bookId = Math.random().toString(36).substr(2,6).toUpperCase();
+  _bookingHistory.push({id:bookId, movie:det.movie||'Movie', datetime:det.datetime||'—', theatre:det.theatre||'—', seats:det.seats||'—', card:card, amt:amtTxt});
   const wrap = document.createElement('div');
   wrap.className = 'msg bot';
   const av = document.createElement('div');
