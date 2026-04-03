@@ -215,6 +215,21 @@ body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color
 .confirmed-card .info-row:last-child{border:none}
 .confirmed-card .info-row span:first-child{color:rgba(255,255,255,.65)}
 
+/* ── Movie Ticket card ───────────────────────────────── */
+.ticket-card{border-radius:14px;overflow:hidden;margin:10px 0;box-shadow:0 6px 24px rgba(0,0,0,.14);font-size:13px}
+.ticket-top{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);color:#fff;padding:18px 20px 14px}
+.ticket-badge{display:inline-block;background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:8px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.ticket-movie{font-size:18px;font-weight:800;letter-spacing:.3px}
+.ticket-body{background:#fff;padding:14px 20px}
+.ticket-divider{border:none;border-top:2px dashed var(--surface3);margin:0 0 12px}
+.ticket-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--surface2);font-size:12px}
+.ticket-row:last-child{border-bottom:none}
+.ticket-lbl{color:var(--muted);flex-shrink:0;margin-right:8px}
+.ticket-val{font-weight:600;text-align:right;max-width:65%}
+.ticket-stub{background:linear-gradient(90deg,#064e3b,#065f46);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.ticket-enjoy{font-size:13px;font-weight:700;line-height:1.6}
+.ticket-enjoy small{display:block;font-size:10px;font-weight:400;opacity:.75}
+
 /* ── Booking action buttons ─────────────────────────── */
 .action-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--surface3)}
 .ab{border:none;border-radius:12px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
@@ -475,6 +490,21 @@ function playChime(){
 // ── Payment flow ─────────────────────────────────────
 let _pendingBooking = {};
 
+function extractBookingDetails(text){
+  const d = {};
+  const movieM = text.match(/\*\*([^*]+)\*\*/) || text.match(/for\s+([A-Z][A-Za-z0-9 ]+?)(?= this| on | at )/);
+  if(movieM) d.movie = movieM[1].trim();
+  const dtM = text.match(/Date[^:]*:\s*(.+)/i);
+  if(dtM) d.datetime = dtM[1].trim();
+  const thM = text.match(/Theatre[^:]*:\s*(.+)/i);
+  if(thM) d.theatre = thM[1].trim();
+  const stM = text.match(/Seats?[^:]*:\s*(.+)/i);
+  if(stM) d.seats = stM[1].trim();
+  const catM = text.match(/Premium|Gold|Silver|Platinum|Standard|Classic/i);
+  if(catM) d.category = catM[0];
+  return d;
+}
+
 function buildFallbackOptions(text){
   // Extract base price from bot recommendation message
   const priceM = text.match(/(?:base price|price)[:\s]+(?:Rs\.?\s*|₹\s*)([\d,]+)/i)
@@ -602,18 +632,38 @@ function confirmPayment(optName, amt){
   _bookingInProgress = false;
   const card = optName || _pendingBooking.card || 'Payment option';
   const amtTxt = amt || _pendingBooking.amount || '';
+  const det = extractBookingDetails(_lastBotText);
+  const bookId = Math.random().toString(36).substr(2,6).toUpperCase();
   const wrap = document.createElement('div');
   wrap.className = 'msg bot';
   const av = document.createElement('div');
-  av.className = 'avatar bot'; av.textContent = '🤖';
+  av.className = 'avatar bot'; av.textContent = '\ud83e\udd16';
   const b = document.createElement('div');
   b.className = 'bubble';
   b.innerHTML = `<div class="confirmed-card">
-    <span class="tick">✅</span>
+    <span class="tick">\u2705</span>
     <h4>Booking Confirmed!</h4>
-    <div class="info-row"><span>Option chosen</span><span>${esc(card)}</span></div>
+    <div class="info-row"><span>Payment via</span><span>${esc(card)}</span></div>
     <div class="info-row"><span>Amount charged</span><span>${esc(amtTxt)}</span></div>
-    <div class="info-row"><span>Status</span><span>Payment successful</span></div>
+    <div class="info-row"><span>Booking ID</span><span>#${bookId}</span></div>
+    <div class="info-row"><span>Status</span><span>Payment successful \u2705</span></div>
+  </div>
+  <div class="ticket-card">
+    <div class="ticket-top">
+      <span class="ticket-badge">\ud83c\udfab Movie Ticket</span>
+      <div class="ticket-movie">${esc(det.movie||'Movie')}</div>
+    </div>
+    <div class="ticket-body">
+      <hr class="ticket-divider"/>
+      <div class="ticket-row"><span class="ticket-lbl">Date &amp; Time</span><span class="ticket-val">${esc(det.datetime||'\u2014')}</span></div>
+      <div class="ticket-row"><span class="ticket-lbl">Theatre</span><span class="ticket-val">${esc(det.theatre||'\u2014')}</span></div>
+      <div class="ticket-row"><span class="ticket-lbl">Seats</span><span class="ticket-val">${esc(det.seats||'\u2014')}</span></div>
+      <div class="ticket-row"><span class="ticket-lbl">Category</span><span class="ticket-val">${esc(det.category||'Premium')}</span></div>
+    </div>
+    <div class="ticket-stub">
+      <div class="ticket-enjoy">Enjoy your movie, Ram!<small>Have a great show \ud83c\udf7f</small></div>
+      <span style="font-size:26px">\ud83c\udfac</span>
+    </div>
   </div>`;
   wrap.appendChild(av); wrap.appendChild(b);
   chat.appendChild(wrap);
