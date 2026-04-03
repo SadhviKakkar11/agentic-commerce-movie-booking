@@ -637,7 +637,7 @@ function confirmPayment(optName, amt){
   const wrap = document.createElement('div');
   wrap.className = 'msg bot';
   const av = document.createElement('div');
-  av.className = 'avatar bot'; av.textContent = '\ud83e\udd16';
+  av.className = 'avatar bot'; av.textContent = '🤖';
   const b = document.createElement('div');
   b.className = 'bubble';
   b.innerHTML = `<div class="confirmed-card">
@@ -650,7 +650,7 @@ function confirmPayment(optName, amt){
   </div>
   <div class="ticket-card">
     <div class="ticket-top">
-      <span class="ticket-badge">\ud83c\udfab Movie Ticket</span>
+      <span class="ticket-badge">🎫 Movie Ticket</span>
       <div class="ticket-movie">${esc(det.movie||'Movie')}</div>
     </div>
     <div class="ticket-body">
@@ -661,8 +661,8 @@ function confirmPayment(optName, amt){
       <div class="ticket-row"><span class="ticket-lbl">Category</span><span class="ticket-val">${esc(det.category||'Premium')}</span></div>
     </div>
     <div class="ticket-stub">
-      <div class="ticket-enjoy">Enjoy your movie, Ram!<small>Have a great show \ud83c\udf7f</small></div>
-      <span style="font-size:26px">\ud83c\udfac</span>
+      <div class="ticket-enjoy">Enjoy your movie, Ram!<small>Have a great show 🍿</small></div>
+      <span style="font-size:26px">🎬</span>
     </div>
   </div>`;
   wrap.appendChild(av); wrap.appendChild(b);
