@@ -307,6 +307,7 @@ const USER_ID = 'user_ram_001';
 const chat    = document.getElementById('chatArea');
 let _lastBotText = '';
 let _bookingInProgress = false;
+let _lastActionContainer = null;
 
 // hint: fill input and focus (let user edit or press Enter/send)
 function hint(t){
@@ -395,6 +396,7 @@ function maybeShowActions(bubble, text){
         container.querySelectorAll('button').forEach(function(b){b.disabled=true;b.style.opacity='0.5';b.style.cursor='default';});
         if(cls==='ab-yes'){
           _bookingInProgress = true;
+          _lastActionContainer = container;
           // Try parsed options first, then synthesized, then direct confirm
           const opts=parseOptions(_lastBotText);
           if(opts.length){ showPaymentPanel(opts); return; }
@@ -583,6 +585,14 @@ function maybeShowPayment(text){
 
 function closePayment(){
   document.getElementById('payOverlay').classList.remove('open');
+  // Re-enable action buttons so user can choose a different option
+  if(_lastActionContainer){
+    _lastActionContainer.querySelectorAll('button').forEach(function(b){
+      b.disabled=false;b.style.opacity='';b.style.cursor='';
+    });
+    _lastActionContainer=null;
+  }
+  _bookingInProgress=false;
 }
 
 function confirmPayment(optName, amt){
